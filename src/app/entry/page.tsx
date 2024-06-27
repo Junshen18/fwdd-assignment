@@ -3,15 +3,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import useSound from "use-sound";
+import AudioButton from "@/components/audioButton";
 
 export default function EntryPage() {
   const [start, setStart] = useState(false);
-  const [buttonSound] = useSound("/button-click.mp3");
-  const [playBgm] = useSound("/magic-bgm.mp3");
-
-  useEffect(() => {
-    playBgm();
-  });
+  const [buttonSound] = useSound("/soundEffects/button-click.mp3");
 
   const EntrySection = () => {
     return (
@@ -27,6 +23,7 @@ export default function EntryPage() {
             alt="Picture of the author"
             className="absolute top-0 left-2"
           />
+
           <div className="flex flex-col items-center justify-center h-3/4 bg-transparent">
             <h1 className="text-[100px] font-bold text-transparent bg-clip-text bg-gradient-to-t from-[#F5BFBF] to-white drop-shadow-lg">
               PYTHON
@@ -76,7 +73,7 @@ export default function EntryPage() {
               onClick={() => {
                 buttonSound();
               }}
-              className="text-5xl leading-none"
+              className="text-5xl leading-none hover:animate-bounce"
             >
               Sign Up
             </button>
@@ -84,7 +81,7 @@ export default function EntryPage() {
               onClick={() => {
                 buttonSound();
               }}
-              className="text-5xl leading-none"
+              className="text-5xl leading-none hover:animate-bounce"
             >
               Login
             </button>
@@ -92,7 +89,7 @@ export default function EntryPage() {
               onClick={() => {
                 buttonSound();
               }}
-              className="text-5xl leading-none"
+              className="text-5xl leading-none hover:animate-bounce"
             >
               Guest
             </button>
@@ -104,6 +101,9 @@ export default function EntryPage() {
 
   return (
     <>
+      <div className="absolute bottom-0 right-0">
+        <AudioButton />
+      </div>
       <div>{start ? <LoginSection /> : <EntrySection />}</div>
     </>
   );
