@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import useSound from "use-sound";
 import AudioButton from "@/components/audioButton";
+import LoginPanel from "@/components/loginPanel";
 
 export default function EntryPage() {
   const [start, setStart] = useState(false);
@@ -69,14 +70,19 @@ export default function EntryPage() {
             </h1>
           </div>
           <div className="flex flex-row justify-between w-3/5">
-            <button
+            <LoginPanel
+              buttonText="Sign Up"
+              title="Sign Up"
+              desc="Get you account now"
+            />
+            {/* <button
               onClick={() => {
                 buttonSound();
               }}
               className="text-5xl leading-none hover:animate-bounce"
             >
               Sign Up
-            </button>
+            </button> */}
             <button
               onClick={() => {
                 buttonSound();
@@ -104,6 +110,8 @@ export default function EntryPage() {
       <div className="absolute bottom-0 right-0">
         <AudioButton />
       </div>
+      <div className="absolute z-1"></div>
+
       <div>{start ? <LoginSection /> : <EntrySection />}</div>
     </>
   );
