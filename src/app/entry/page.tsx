@@ -54,7 +54,7 @@ export default function EntryPage() {
           src="/kreate.png"
           width={100}
           height={100}
-          alt="Picture of the author"
+          alt="Kreate"
           className="absolute top-0 left-2"
         />
 
@@ -90,7 +90,7 @@ export default function EntryPage() {
         <div className="w-3/5">
           {start ? <LoginSection /> : <EntrySection />}
         </div>
-        <div className="absolute bottom-0 right-0">
+        <div className="absolute bottom-5 right-5">
           <AudioButton />
         </div>
       </div>

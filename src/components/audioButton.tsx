@@ -17,16 +17,18 @@ export default function AudioButton() {
 
   return (
     <>
-      <div
+      <button
+        className="cursor-pointer transition-all bg-neutral-700 text-white p-7 rounded-2xl border-neutral-800
+border-b-[6px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] text-3xl
+active:border-b-[2px] active:brightness-90 active:translate-y-[2px] w-10 h-10  flex items-center justify-center"
         onClick={() => setPlayMusic(!playMusic)}
-        className="w-10 h-10 m-8 items-center"
       >
         {playMusic ? (
           <FontAwesomeIcon icon={faVolumeHigh} className="w-10 h-10 " />
         ) : (
           <FontAwesomeIcon icon={faVolumeXmark} className="w-9 h-9" />
         )}
-      </div>
+      </button>
     </>
   );
 }
