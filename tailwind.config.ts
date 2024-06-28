@@ -19,7 +19,7 @@ const config = {
     },
     extend: {
       fontFamily: {
-        poppins: ["", ""],
+        poppins: ["Poppins", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

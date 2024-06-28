@@ -4,7 +4,8 @@ import useSound from "use-sound";
 import { useEffect, useState } from "react";
 export default function AudioButton() {
   const [playMusic, setPlayMusic] = useState(false);
-  const [play, { stop }] = useSound("/soundEffects/chipichipi.mp3");
+  // const [play, { stop }] = useSound("/soundEffects/chipichipi.mp3");
+  const [play, { stop }] = useSound("/soundEffects/mogumogu.mp3");
 
   useEffect(() => {
     if (playMusic) {
