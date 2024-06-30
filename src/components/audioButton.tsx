@@ -1,3 +1,5 @@
+"use client";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVolumeHigh, faVolumeXmark } from "@fortawesome/free-solid-svg-icons";
 import useSound from "use-sound";

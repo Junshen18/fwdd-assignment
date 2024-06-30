@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-
 const gillsans = localFont({
   src: "/fonts/Gill-Sans-Ultra-Bold.ttf",
   display: "swap",

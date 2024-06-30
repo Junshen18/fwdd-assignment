@@ -11,6 +11,7 @@ import { Label } from "@radix-ui/react-label";
 import useSound from "use-sound";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import CustomButton from "./customButton";
 
 export default function GuestPanel() {
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
@@ -54,7 +55,17 @@ export default function GuestPanel() {
             </div>
           </div>
           <DialogFooter className="mt-3">
-            <button
+            <CustomButton
+              text="Start"
+              bgColor="#515a92"
+              borderColor="#484877"
+              onClick={() => {
+                router.push("/findRoom");
+                buttonSound();
+              }}
+              w="200px"
+            />
+            {/* <button
               type="submit"
               onClick={() => {
                 router.push("/findRoom");
@@ -63,7 +74,7 @@ export default function GuestPanel() {
               className="bg-[#515a92] hover:bg-[#484877] text-2xl py-2 px-10 rounded-full drop-shadow-lg"
             >
               Start
-            </button>
+            </button> */}
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -7,6 +7,7 @@ import AudioButton from "@/components/audioButton";
 import LoginPanel from "@/components/loginPanel";
 import SignUpPanel from "@/components/signUpPanel";
 import GuestPanel from "@/components/guestPanel";
+import Header from "@/components/header";
 
 export default function EntryPage() {
   const [start, setStart] = useState(false);
@@ -46,18 +47,17 @@ export default function EntryPage() {
 
   return (
     <>
+      <Image
+        src="/kreate.png"
+        width={100}
+        height={100}
+        alt="kreate"
+        className="absolute top-0 left-0"
+      />
       <div
         className="h-screen w-screen bg-cover bg-center flex flex-col justify-center items-center"
         style={{ backgroundImage: `url('/background.png')` }}
       >
-        <Image
-          src="/kreate.png"
-          width={100}
-          height={100}
-          alt="Kreate"
-          className="absolute top-0 left-2"
-        />
-
         <svg
           xmlns="http://www.w3.org/2000/svg"
           x="0px"
@@ -89,9 +89,6 @@ export default function EntryPage() {
         </div>
         <div className="w-3/5">
           {start ? <LoginSection /> : <EntrySection />}
-        </div>
-        <div className="absolute bottom-5 right-5">
-          <AudioButton />
         </div>
       </div>
     </>

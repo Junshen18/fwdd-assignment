@@ -1,20 +1,21 @@
 "use client";
 import AudioButton from "@/components/audioButton";
+import CustomButton from "@/components/customButton";
+import Header from "@/components/header";
 import ProfileDiv from "@/components/profileName";
+import { useRouter } from "next/navigation";
 import useSound from "use-sound";
 
 export default function FindRoomPage() {
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
+  const router = useRouter();
   return (
     <>
       <div
         className="h-screen w-screen bg-cover bg-center flex flex-col justify-start items-center top"
         style={{ backgroundImage: `url('/background.png')` }}
       >
-        <div className="absolute bottom-5 left-5">
-          <ProfileDiv pic="/pfp2.svg" name="Wong Jun Shen" />
-        </div>
-
+        <Header logo />
         <div
           className={
             "flex flex-col items-center justify-center h-3/5 bg-transparent scale-125"
@@ -29,32 +30,26 @@ export default function FindRoomPage() {
         </div>
         <div className="h-auto flex flex-col gap-10 z-10  ">
           <div className="h-16">
-            <button
-              className="cursor-pointer transition-all bg-amber-500 text-white h-16 w-80 px-8 py-2 rounded-2xl border-amber-600
-border-b-[6px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] text-3xl
-active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
+            <CustomButton
+              text="Create Room"
+              bgColor="#f59e0b"
+              borderColor="#d97706"
               onClick={() => {
                 buttonSound();
               }}
-            >
-              Create Room
-            </button>
+            />
           </div>
           <div className="h-16">
-            <button
-              className="cursor-pointer transition-all bg-blue-500 text-white h-16 w-80 px-8 py-2 rounded-2xl border-blue-600
-border-b-[6px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] text-3xl
-active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
+            <CustomButton
+              text="Join Room"
+              bgColor="#3b82f6"
+              borderColor="#2563eb"
               onClick={() => {
                 buttonSound();
+                router.push("/findRoom/joinRoom");
               }}
-            >
-              Join Room
-            </button>
+            />
           </div>
-        </div>
-        <div className="absolute bottom-5 right-5">
-          <AudioButton />
         </div>
       </div>
     </>
