@@ -48,11 +48,11 @@ export default function EntryPage() {
   return (
     <>
       <Image
-        src="/kreate.png"
+        src="/pythonwizard.svg"
         width={100}
         height={100}
         alt="kreate"
-        className="absolute top-0 left-0"
+        className="absolute top-5 left-5"
       />
       <div
         className="h-screen w-screen bg-cover bg-center flex flex-col justify-center items-center"
@@ -65,7 +65,7 @@ export default function EntryPage() {
           width="80"
           height="80"
           viewBox="0 0 48 48"
-          className="absolute bottom-1 left-2"
+          className="absolute bottom-5 left-5"
         >
           <path
             fill="#0277BD"

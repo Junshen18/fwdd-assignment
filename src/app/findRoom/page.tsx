@@ -18,7 +18,7 @@ export default function FindRoomPage() {
         <Header logo />
         <div
           className={
-            "flex flex-col items-center justify-center h-3/5 bg-transparent scale-125"
+            "flex flex-col items-center justify-center h-3/5 bg-transparent scale-125 mt-10"
           }
         >
           <h1 className="text-[100px] font-bold text-transparent bg-clip-text bg-gradient-to-t from-[#F5BFBF] to-white drop-shadow-lg">

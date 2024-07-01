@@ -13,7 +13,10 @@ export default function Header({ logo }: HeaderProps) {
     <>
       <div className="w-screen bg-transparent absolute z-30">
         <div className="grid grid-cols-3 items-center p-4">
-          <BackArrow />
+          <div className="ml-5">
+            <BackArrow />
+          </div>
+
           {logo ? (
             <div className="flex justify-center">
               <Image
