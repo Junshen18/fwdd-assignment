@@ -10,10 +10,25 @@ import { Input } from "./ui/input";
 import { Label } from "@radix-ui/react-label";
 import useSound from "use-sound";
 import { useRouter } from "next/navigation";
+import CustomButton from "./customButton";
+import { useState } from "react";
+import local from "next/font/local";
 
 export default function SignUpPanel() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
   const router = useRouter();
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    // Store login data in localStorage
+    localStorage.setItem("name", name);
+    localStorage.setItem("email", email);
+    localStorage.setItem("password", password);
+    console.log(`Login data stored ${name}, ${password}`);
+    router.push("/findRoom");
+  };
 
   return (
     <>
@@ -32,43 +47,61 @@ export default function SignUpPanel() {
               Sign Up
             </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="flex flex-col items-start gap-4">
-              <Label htmlFor="username" className="">
-                Username:
-              </Label>
-              <Input id="username" defaultValue="" className="col-span-3" />
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="flex flex-col items-start gap-4">
+                <Label htmlFor="username" className="">
+                  Username:
+                </Label>
+                <Input
+                  id="username"
+                  defaultValue=""
+                  className="col-span-3"
+                  onChange={(event) => {
+                    setName(event.target.value);
+                  }}
+                />
+              </div>
+              <div className="flex flex-col items-start gap-4">
+                <Label htmlFor="email" className="text-right">
+                  Email:
+                </Label>
+                <Input
+                  id="email"
+                  defaultValue=""
+                  className="col-span-3 "
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+                  }}
+                />
+              </div>
+              <div className="flex flex-col items-start gap-4">
+                <Label htmlFor="password" className="">
+                  Password:
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  defaultValue=""
+                  className="col-span-3"
+                  onChange={(event) => {
+                    setPassword(event.target.value);
+                  }}
+                />
+              </div>
             </div>
-            <div className="flex flex-col items-start gap-4">
-              <Label htmlFor="email" className="text-right">
-                Email:
-              </Label>
-              <Input id="email" defaultValue="" className="col-span-3 " />
-            </div>
-            <div className="flex flex-col items-start gap-4">
-              <Label htmlFor="password" className="">
-                Password:
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                defaultValue=""
-                className="col-span-3"
+            <DialogFooter className="mt-3">
+              <CustomButton
+                text="Sign Up"
+                bgColor="#515a92"
+                borderColor="#484877"
+                onClick={() => {
+                  buttonSound();
+                }}
+                w="250px"
               />
-            </div>
-          </div>
-          <DialogFooter className="mt-3">
-            <button
-              type="submit"
-              onClick={() => {
-                router.push("/findRoom");
-                buttonSound();
-              }}
-              className="bg-[#515a92] hover:bg-[#484877] text-2xl py-2 px-10 rounded-full drop-shadow-lg"
-            >
-              Sign Up
-            </button>
-          </DialogFooter>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </>

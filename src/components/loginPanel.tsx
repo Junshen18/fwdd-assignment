@@ -11,6 +11,7 @@ import { Label } from "@radix-ui/react-label";
 import useSound from "use-sound";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import CustomButton from "./customButton";
 
 export default function LoginPanel() {
   const [name, setName] = useState("");
@@ -47,11 +48,11 @@ export default function LoginPanel() {
           <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
               <div className="flex flex-col items-start gap-4">
-                <Label htmlFor="email" className="text-right">
-                  Email:
+                <Label htmlFor="name" className="text-right">
+                  Name:
                 </Label>
                 <Input
-                  id="email"
+                  id="name"
                   defaultValue={name}
                   className="col-span-3"
                   onChange={(event) => {
@@ -75,15 +76,15 @@ export default function LoginPanel() {
               </div>
             </div>
             <DialogFooter className="mt-3 justify-center">
-              <button
-                type="submit"
+              <CustomButton
+                text="Login"
+                bgColor="#515a92"
+                borderColor="#484877"
                 onClick={() => {
                   buttonSound();
                 }}
-                className="bg-[#515a92] hover:bg-[#484877] text-2xl py-2 px-10 rounded-full drop-shadow-lg"
-              >
-                Login
-              </button>
+                w="200px"
+              />
             </DialogFooter>
           </form>
         </DialogContent>
