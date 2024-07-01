@@ -10,11 +10,6 @@ import useSound from "use-sound";
 export default function FindRoomPage() {
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  useEffect(() => {
-    const storedemail = localStorage.getItem("email") || "Guest";
-    setEmail(storedemail);
-  }, []);
 
   return (
     <>

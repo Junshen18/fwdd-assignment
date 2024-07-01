@@ -6,10 +6,10 @@ import BackArrow from "./backArrow";
 import { useEffect, useState } from "react";
 
 export default function Header() {
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   useEffect(() => {
-    const storedemail = localStorage.getItem("email") || "Guest";
-    setEmail(storedemail);
+    const storedName = localStorage.getItem("name") || "Unknown";
+    setName(storedName);
   }, []);
   return (
     <>
@@ -21,7 +21,7 @@ export default function Header() {
           <div></div>
 
           <div className="flex gap-4 justify-end">
-            <ProfileDiv pic="/pfp2.svg" name={email} />
+            <ProfileDiv pic="/pfp2.svg" name={name} />
             <AudioButton />
           </div>
         </div>

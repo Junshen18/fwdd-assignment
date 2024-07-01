@@ -14,6 +14,7 @@ export default function CustomButton({
 }: CustomButtonProps) {
   return (
     <button
+      type="submit"
       style={{
         backgroundColor: bgColor,
         borderColor: borderColor,

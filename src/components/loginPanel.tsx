@@ -13,16 +13,16 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPanel() {
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
   const router = useRouter();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // Store login data in localStorage
-    localStorage.setItem("email", email);
+    localStorage.setItem("name", name);
     localStorage.setItem("password", password);
-    console.log(`Login data stored ${email}, ${password}`);
+    console.log(`Login data stored ${name}, ${password}`);
     router.push("/findRoom");
   };
   return (
@@ -52,10 +52,10 @@ export default function LoginPanel() {
                 </Label>
                 <Input
                   id="email"
-                  defaultValue={email}
+                  defaultValue={name}
                   className="col-span-3"
                   onChange={(event) => {
-                    setEmail(event.target.value);
+                    setName(event.target.value);
                   }}
                 />
               </div>

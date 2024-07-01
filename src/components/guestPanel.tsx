@@ -14,9 +14,17 @@ import { useRouter } from "next/navigation";
 import CustomButton from "./customButton";
 
 export default function GuestPanel() {
+  const [name, setName] = useState("");
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
   const [randomNumber, setRandomNumber] = useState(generateRandomNumber());
   const router = useRouter();
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    // Store login data in localStorage
+    localStorage.setItem("name", name);
+    console.log(`Login data stored ${name}`);
+    router.push("/findRoom");
+  };
 
   function generateRandomNumber() {
     return Math.floor(1000 + Math.random() * 9000);
@@ -29,7 +37,9 @@ export default function GuestPanel() {
           <button
             onClick={() => {
               buttonSound();
-              setRandomNumber(generateRandomNumber);
+              generateRandomNumber();
+              setRandomNumber(randomNumber);
+              setName(`Guest${randomNumber}`);
             }}
             className="pointer-events-auto hover:animate-bounce text-5xl leading-none drop-shadow-lg"
           >
@@ -42,40 +52,50 @@ export default function GuestPanel() {
               Play as Guest
             </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="flex flex-col items-start gap-4">
-              <Label htmlFor="email" className="text-right">
-                Name:
-              </Label>
-              <Input
-                id="email"
-                defaultValue={`Guest${randomNumber}`}
-                className="col-span-3 "
-              />
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="flex flex-col items-start gap-4">
+                <Label htmlFor="email" className="text-right">
+                  Name:
+                </Label>
+                <Input
+                  id="email"
+                  defaultValue={`Guest${randomNumber}`}
+                  className="col-span-3 "
+                  onChange={(event) => {
+                    setName(event.target.value);
+                  }}
+                />
+              </div>
             </div>
-          </div>
-          <DialogFooter className="mt-3">
-            <CustomButton
-              text="Start"
-              bgColor="#515a92"
-              borderColor="#484877"
-              onClick={() => {
-                router.push("/findRoom");
-                buttonSound();
-              }}
-              w="200px"
-            />
-            {/* <button
-              type="submit"
-              onClick={() => {
-                router.push("/findRoom");
-                buttonSound();
-              }}
-              className="bg-[#515a92] hover:bg-[#484877] text-2xl py-2 px-10 rounded-full drop-shadow-lg"
-            >
-              Start
-            </button> */}
-          </DialogFooter>
+            <DialogFooter className="mt-3">
+              {/* <button
+                type="submit"
+                style={{
+                  backgroundColor: "#515a92",
+                  borderColor: "#484877",
+                  width: "200px",
+                }}
+                className={`cursor-pointer transition-all text-white h-16 px-8 py-2 rounded-2xl 
+        border-b-[6px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] text-3xl
+        active:border-b-[2px] active:brightness-90 active:translate-y-[2px]`}
+                onClick={() => {
+                  buttonSound();
+                }}
+              >
+                Start
+              </button> */}
+              <CustomButton
+                text="Start"
+                bgColor="#515a92"
+                borderColor="#484877"
+                onClick={() => {
+                  buttonSound();
+                }}
+                w="200px"
+              />
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </>
