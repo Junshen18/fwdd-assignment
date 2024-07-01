@@ -22,7 +22,7 @@ export default function JoinRoomPage() {
   return (
     <>
       <div>
-        <Header logo />
+        <Header />
         <Image
           src="/snake.svg"
           width={200}

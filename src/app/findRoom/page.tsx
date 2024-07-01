@@ -4,18 +4,25 @@ import CustomButton from "@/components/customButton";
 import Header from "@/components/header";
 import ProfileDiv from "@/components/profileName";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import useSound from "use-sound";
 
 export default function FindRoomPage() {
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
   const router = useRouter();
+  const [email, setEmail] = useState("");
+  useEffect(() => {
+    const storedemail = localStorage.getItem("email") || "Guest";
+    setEmail(storedemail);
+  }, []);
+
   return (
     <>
       <div
-        className="h-screen w-screen bg-cover bg-center flex flex-col justify-start items-center top"
+        className="h-screen w-screen bg-cover bg-center flex flex-col justify-start items-center"
         style={{ backgroundImage: `url('/background.png')` }}
       >
-        <Header logo />
+        <Header />
         <div
           className={
             "flex flex-col items-center justify-center h-3/5 bg-transparent scale-125 mt-10"

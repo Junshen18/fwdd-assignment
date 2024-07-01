@@ -10,16 +10,29 @@ import { Input } from "./ui/input";
 import { Label } from "@radix-ui/react-label";
 import useSound from "use-sound";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginPanel() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
   const router = useRouter();
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    // Store login data in localStorage
+    localStorage.setItem("email", email);
+    localStorage.setItem("password", password);
+    console.log(`Login data stored ${email}, ${password}`);
+    router.push("/findRoom");
+  };
   return (
     <>
       <Dialog>
         <DialogTrigger asChild>
           <button
-            onClick={() => buttonSound()}
+            onClick={() => {
+              buttonSound();
+            }}
             className="pointer-events-auto hover:animate-bounce text-5xl leading-none drop-shadow-lg"
           >
             Login
@@ -31,37 +44,48 @@ export default function LoginPanel() {
               Login
             </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="flex flex-col items-start gap-4">
-              <Label htmlFor="email" className="text-right">
-                Email:
-              </Label>
-              <Input id="email" defaultValue="" className="col-span-3 " />
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="flex flex-col items-start gap-4">
+                <Label htmlFor="email" className="text-right">
+                  Email:
+                </Label>
+                <Input
+                  id="email"
+                  defaultValue={email}
+                  className="col-span-3"
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+                  }}
+                />
+              </div>
+              <div className="flex flex-col items-start gap-4">
+                <Label htmlFor="password" className="">
+                  Password:
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  defaultValue=""
+                  className="col-span-3"
+                  onChange={(event) => {
+                    setPassword(event.target.value);
+                  }}
+                />
+              </div>
             </div>
-            <div className="flex flex-col items-start gap-4">
-              <Label htmlFor="password" className="">
-                Password:
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                defaultValue=""
-                className="col-span-3"
-              />
-            </div>
-          </div>
-          <DialogFooter className="mt-3">
-            <button
-              type="submit"
-              onClick={() => {
-                router.push("/findRoom");
-                buttonSound();
-              }}
-              className="bg-[#515a92] hover:bg-[#484877] text-2xl py-2 px-10 rounded-full drop-shadow-lg"
-            >
-              Login
-            </button>
-          </DialogFooter>
+            <DialogFooter className="mt-3 justify-center">
+              <button
+                type="submit"
+                onClick={() => {
+                  buttonSound();
+                }}
+                className="bg-[#515a92] hover:bg-[#484877] text-2xl py-2 px-10 rounded-full drop-shadow-lg"
+              >
+                Login
+              </button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </>

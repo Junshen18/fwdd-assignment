@@ -4,7 +4,7 @@ export default function LobbyPage() {
   return (
     <>
       <div>
-        <Header logo />
+        <Header />
       </div>
     </>
   );
