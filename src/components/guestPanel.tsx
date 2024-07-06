@@ -69,22 +69,6 @@ export default function GuestPanel() {
               </div>
             </div>
             <DialogFooter className="mt-3">
-              {/* <button
-                type="submit"
-                style={{
-                  backgroundColor: "#515a92",
-                  borderColor: "#484877",
-                  width: "200px",
-                }}
-                className={`cursor-pointer transition-all text-white h-16 px-8 py-2 rounded-2xl 
-        border-b-[6px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] text-3xl
-        active:border-b-[2px] active:brightness-90 active:translate-y-[2px]`}
-                onClick={() => {
-                  buttonSound();
-                }}
-              >
-                Start
-              </button> */}
               <CustomButton
                 text="Start"
                 bgColor="#515a92"
@@ -93,6 +77,7 @@ export default function GuestPanel() {
                   buttonSound();
                 }}
                 w="200px"
+                buttonType="submit"
               />
             </DialogFooter>
           </form>

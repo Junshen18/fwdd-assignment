@@ -84,6 +84,7 @@ export default function LoginPanel() {
                   buttonSound();
                 }}
                 w="200px"
+                buttonType="submit"
               />
             </DialogFooter>
           </form>

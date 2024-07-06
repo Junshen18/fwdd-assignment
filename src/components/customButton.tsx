@@ -1,9 +1,11 @@
+"use client";
 type CustomButtonProps = {
   text: string;
   onClick: () => void;
   bgColor: string;
   borderColor: string;
   w?: string;
+  buttonType?: "submit" | "reset" | "button";
 };
 export default function CustomButton({
   text,
@@ -11,10 +13,11 @@ export default function CustomButton({
   bgColor,
   borderColor,
   w,
+  buttonType,
 }: CustomButtonProps) {
   return (
     <button
-      type="submit"
+      type={buttonType}
       style={{
         backgroundColor: bgColor,
         borderColor: borderColor,

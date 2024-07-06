@@ -99,6 +99,7 @@ export default function SignUpPanel() {
                   buttonSound();
                 }}
                 w="250px"
+                buttonType="submit"
               />
             </DialogFooter>
           </form>
