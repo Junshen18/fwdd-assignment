@@ -18,7 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`leading-none tracking-[-4%] ${gillsans.className}`}>
+      <body
+        className={`leading-none tracking-[-4%] text-white ${gillsans.className}`}
+      >
         {children}
       </body>
     </html>

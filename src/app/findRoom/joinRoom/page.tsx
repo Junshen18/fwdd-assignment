@@ -28,14 +28,14 @@ export default function JoinRoomPage() {
           width={200}
           height={200}
           alt="snake"
-          className="absolute bottom-5 left-5 z-10"
+          className="absolute bottom-5 left-5 z-10 hidden md:block w-48 lg:w-52"
         />
         <Image
           src="/wizardcrystal.svg"
           width={200}
           height={200}
           alt="snake"
-          className="absolute bottom-5 right-5 z-10"
+          className="absolute bottom-5 right-5 z-10 hidden md:block w-48 lg:w-52"
         />
         <div
           className="h-screen relative w-screen bg-gradient-to-t from-violet-800 to-violet-500 bg-cover bg-center flex flex-col justify-center gap-8 text-violet-600 items-center"

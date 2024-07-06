@@ -34,7 +34,7 @@ export default function LoginPanel() {
             onClick={() => {
               buttonSound();
             }}
-            className="pointer-events-auto hover:animate-bounce text-5xl leading-none drop-shadow-lg"
+            className="pointer-events-auto hover:animate-bounce md:text-5xl text-3xl leading-none drop-shadow-lg"
           >
             Login
           </button>

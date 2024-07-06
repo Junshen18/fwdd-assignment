@@ -20,15 +20,21 @@ export default function AudioButton() {
   return (
     <>
       <button
-        className="cursor-pointer transition-all bg-neutral-700 text-white p-7 rounded-2xl border-neutral-800
+        className="cursor-pointer transition-all bg-neutral-700 text-white p-7 rounded-2xl border-neutral-800 
 border-b-[6px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] text-3xl
-active:border-b-[2px] active:brightness-90 active:translate-y-[2px] w-10 h-10  flex items-center justify-center"
+active:border-b-[2px] active:brightness-90 active:translate-y-[2px] md:w-10 md:h-10 w-3 h-3 flex items-center justify-center"
         onClick={() => setPlayMusic(!playMusic)}
       >
         {playMusic ? (
-          <FontAwesomeIcon icon={faVolumeHigh} className="w-10 h-10 " />
+          <FontAwesomeIcon
+            icon={faVolumeHigh}
+            className="md:w-10 md:h-10 w-8 h-8"
+          />
         ) : (
-          <FontAwesomeIcon icon={faVolumeXmark} className="w-9 h-9" />
+          <FontAwesomeIcon
+            icon={faVolumeXmark}
+            className="md:w-9 md:h-9 w-8 h-8"
+          />
         )}
       </button>
     </>

@@ -41,7 +41,7 @@ export default function GuestPanel() {
               setRandomNumber(randomNumber);
               setName(`Guest${randomNumber}`);
             }}
-            className="pointer-events-auto hover:animate-bounce text-5xl leading-none drop-shadow-lg"
+            className="pointer-events-auto hover:animate-bounce md:text-5xl text-3xl leading-none drop-shadow-lg"
           >
             Guest
           </button>

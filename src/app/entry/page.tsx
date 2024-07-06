@@ -22,7 +22,7 @@ export default function EntryPage() {
               setStart(true);
               buttonSound();
             }}
-            className="animate-bounce text-[70px] leading-none "
+            className="animate-bounce md:text-[70px] leading-none text-5xl"
           >
             Start
           </button>
@@ -34,7 +34,7 @@ export default function EntryPage() {
   const LoginSection = () => {
     return (
       <>
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-col gap-10 lg:flex-row justify-between">
           <SignUpPanel />
           <LoginPanel />
           <GuestPanel />
@@ -43,7 +43,9 @@ export default function EntryPage() {
     );
   };
 
-  const translation = start ? "-translate-y-10 scale-125 transition-all" : "";
+  const translation = start
+    ? "-translate-y-10 md:scale-125 scale-110 transition-all"
+    : "";
 
   return (
     <>
@@ -65,7 +67,7 @@ export default function EntryPage() {
           width="80"
           height="80"
           viewBox="0 0 48 48"
-          className="absolute bottom-5 left-5"
+          className="absolute top-5 right-5"
         >
           <path
             fill="#0277BD"
@@ -78,12 +80,12 @@ export default function EntryPage() {
         </svg>
 
         <div
-          className={`flex flex-col items-center justify-center h-3/5 bg-transparent ${translation}`}
+          className={`flex flex-col items-center justify-center md:h-3/5 h-2/5 bg-transparent ${translation}`}
         >
-          <h1 className="text-[100px] font-bold text-transparent bg-clip-text bg-gradient-to-t from-[#F5BFBF] to-white drop-shadow-lg">
+          <h1 className="text-6xl md:text-[100px] 2xl:text-[120px] font-bold text-transparent bg-clip-text bg-gradient-to-t from-[#F5BFBF] to-white drop-shadow-lg">
             PYTHON
           </h1>
-          <h1 className="text-[100px] font-bold text-transparent bg-clip-text bg-gradient-to-t from-[#EB7E7E] to-[#F5BFBF] drop-shadow-lg mt-2">
+          <h1 className="text-6xl md:text-[100px] 2xl:text-[120px] font-bold text-transparent bg-clip-text bg-gradient-to-t from-[#EB7E7E] to-[#F5BFBF] drop-shadow-lg mt-2">
             WIZARD
           </h1>
         </div>

@@ -18,7 +18,7 @@ export default function BackArrow() {
       >
         <FontAwesomeIcon
           icon={faArrowLeft}
-          size="3x"
+          className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl"
           style={{ color: "#ffffff" }}
         />
       </div>

@@ -1,3 +1,4 @@
+import Header from "@/components/header";
 import QrScanner from "@/components/qrCode";
 
 export default function CreateRoom() {
@@ -11,7 +12,10 @@ export default function CreateRoom() {
           backgroundPosition: "center",
         }}
       >
-        <h1 className="text-3xl">Scan the Game QR to create room</h1>
+        <Header />
+        <h1 className="text-xl w-2/3 text-center md:w-auto md:text-3xl">
+          Scan the Game QR to create room
+        </h1>
         <div className="w-96">
           <QrScanner />
         </div>
