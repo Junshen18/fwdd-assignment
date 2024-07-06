@@ -38,6 +38,7 @@ export default function FindRoomPage() {
               borderColor="#d97706"
               onClick={() => {
                 buttonSound();
+                router.push("/findRoom/createRoom");
               }}
             />
           </div>
