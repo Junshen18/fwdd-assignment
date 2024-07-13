@@ -9,6 +9,7 @@ export default function QrScanner() {
     <>
       <div className="flex flex-col gap-6">
         <QrReader
+          className="border-4 border-dashed p-3"
           scanDelay={600}
           constraints={{ aspectRatio: 1, facingMode: { ideal: "environment" } }}
           onResult={(result: any, error: any) => {

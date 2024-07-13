@@ -1,17 +1,22 @@
 "use client";
 import CustomButton from "@/components/customButton";
 import Header from "@/components/header";
+import { useRouter } from "next/navigation";
 
 export default function LobbyPage() {
+  const router = useRouter();
+  const handleStart = () => {
+    // Add your logic to join the room using the entered code
+    router.push("/lobby/start");
+  };
   return (
     <>
       <div className="w-screen h-screen bg-gradient-to-t from-indigo-900 to-indigo-600">
         <Header />
-        {/* <div className="w-screen h-screen pattern-hive-indigo-200/50 pattern-hive-scale-[2] absolute -z-1"></div> */}
 
         <div className="w-screen h-screen flex flex-col z-10 gap-20">
           <div className="justify-center flex  m-2">
-            <div className="rounded-xl w-60 py-3  bg-violet-900 text-5xl flex justify-center">
+            <div className="rounded-xl w-60 py-3 bg-violet-900 text-5xl flex justify-center bg-red">
               AEGT
             </div>
           </div>
@@ -36,9 +41,7 @@ export default function LobbyPage() {
               text="Start Game"
               bgColor="#f59e0b"
               borderColor="#d97706"
-              onClick={() => {
-                console.log("Start Game");
-              }}
+              onClick={() => handleStart()}
             />
           </div>
         </div>
