@@ -4,6 +4,7 @@ import Header from "@/components/header";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import useSound from "use-sound";
 
 export default function LobbyPage() {
   const [loading, setLoading] = useState(false);
@@ -12,10 +13,12 @@ export default function LobbyPage() {
     { name: "Sean", image: "/pfp1.svg" },
     { name: "Johnson", image: "/pfp4.svg" },
   ];
+  const [buttonSound] = useSound("/soundEffects/button-click.mp3");
 
   const router = useRouter();
 
   const handleStart = async () => {
+    buttonSound();
     setLoading(true); // Set loading to true
     // Loading 1 second
     await new Promise((resolve) => setTimeout(resolve, 3000));
