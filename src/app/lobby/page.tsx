@@ -38,31 +38,34 @@ export default function LobbyPage() {
 
         {loading && (
           <div className="absolute inset-0 flex  items-center justify-center bg-black bg-opacity-50 z-20">
-            <div className="text-white text-6xl flex  items-center">
+            <div className="text-white md:text-6xl text-3xl flex  items-center">
               Loading game
               <div className="ml-4 flex flex-row gap-2">
-                <div className="w-4 h-4 rounded-full bg-white animate-bounce"></div>
-                <div className="w-4 h-4 rounded-full bg-white animate-bounce [animation-delay:-.3s]"></div>
-                <div className="w-4 h-4 rounded-full bg-white animate-bounce [animation-delay:-.5s]"></div>
+                <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white animate-bounce"></div>
+                <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white animate-bounce [animation-delay:-.3s]"></div>
+                <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white animate-bounce [animation-delay:-.5s]"></div>
               </div>
             </div>
           </div>
         )}
         <div
-          className="w-screen h-screen flex flex-col z-10 gap-20 bg-cover bg-center"
+          className="w-screen h-screen flex flex-col z-10 gap-12 md:gap-16 bg-cover bg-center"
           style={{ backgroundImage: `url('/lobby-bg.jpg')` }}
         >
           <div className="justify-center flex m-2">
-            <div className="rounded-xl w-60 py-3 bg-violet-900 text-5xl flex justify-center bg-red">
+            <div
+              className="rounded-xl text-2xl md:text-4xl w-40 md:w-60 py-4 my-1
+              bg-violet-900 flex justify-center bg-red"
+            >
               AEGT
             </div>
           </div>
 
-          <div className="flex flex-row items-center justify-center gap-4">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             {players.map((player, index) => (
               <div
                 key={index}
-                className="w-64 h-96 shadow-lg bg-indigo-600 z-10 rounded-2xl justify-center flex flex-col gap-4 items-center g"
+                className="w-5/6 h-20 md:w-64 md:h-96 shadow-lg bg-indigo-600 z-10 rounded-2xl justify-center flex flex-row md:flex-col gap-4 items-center"
               >
                 {player.name !== "Waiting" ? (
                   <Image
@@ -74,12 +77,12 @@ export default function LobbyPage() {
                   />
                 ) : (
                   <div className="flex flex-row gap-2">
-                    <div className="w-4 h-4 rounded-full bg-white animate-bounce"></div>
-                    <div className="w-4 h-4 rounded-full bg-white animate-bounce [animation-delay:-.3s]"></div>
-                    <div className="w-4 h-4 rounded-full bg-white animate-bounce [animation-delay:-.5s]"></div>
+                    <div className="w-2 h-2 md:w-4 md:h-4 rounded-full bg-white animate-bounce"></div>
+                    <div className="w-2 h-2 md:w-4 md:h-4 rounded-full bg-white animate-bounce [animation-delay:-.3s]"></div>
+                    <div className="w-2 h-2 md:w-4 md:h-4 rounded-full bg-white animate-bounce [animation-delay:-.5s]"></div>
                   </div>
                 )}
-                <div className="w-40 text-xl flex pl-3 md:pl-5 lg:pl-0 justify-center">
+                <div className="w-40 text-xl flex justify-center">
                   <p className="truncate text-center">{player.name}</p>
                 </div>
               </div>

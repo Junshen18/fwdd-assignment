@@ -22,9 +22,6 @@ export default function Header() {
 
           <div className="flex gap-4 justify-end">
             <ProfileDiv pic="/pfp2.svg" name={name} />
-            <div className="md:w-16 md:h-16 w-14 h-14 mr-1">
-              <AudioButton />
-            </div>
           </div>
         </div>
       </div>

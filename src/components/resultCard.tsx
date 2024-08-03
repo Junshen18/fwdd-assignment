@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useEffect } from "react";
 import useSound from "use-sound";
 
@@ -39,14 +40,15 @@ export default function ResultCard({
   return (
     <div>
       <p
-        className={`text-3xl mb-6 ${
+        className={`text-2xl md:text-3xl mb-6 ${
           isCorrect ? "text-green-600" : "text-red-600"
         }`}
       >
         {isCorrect
-          ? "Correct! You gain a spell book!"
+          ? "Correct! You gain a spell orb!"
           : `Wrong. The correct answer was ${correctAnswer}.`}
       </p>
+
       {!isCorrect && (
         <div>
           <p className="text-xl mb-4">
@@ -54,12 +56,17 @@ export default function ResultCard({
           </p>
         </div>
       )}
+      {isCorrect && (
+        <div className="flex justify-center mb-4">
+          <Image src="/skill1.png" alt="Spell Orb 1" width={160} height={160} />
+        </div>
+      )}
 
       <button
         onClick={handleButtonClick}
         className="bg-blue-500 text-white text-xl px-4 py-2 rounded hover:bg-blue-600 transition-colors"
       >
-        {isCorrect ? "Claim Spell Book" : "Try Again Later"}
+        {isCorrect ? "Claim Spell Orb" : "Try Again Later"}
       </button>
     </div>
   );
