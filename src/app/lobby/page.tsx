@@ -1,9 +1,11 @@
 "use client";
 import CustomButton from "@/components/customButton";
 import Header from "@/components/header";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function LobbyPage() {
+  const player = {};
   const router = useRouter();
   const handleStart = () => {
     // Add your logic to join the room using the entered code
@@ -22,16 +24,25 @@ export default function LobbyPage() {
           </div>
 
           <div className="flex flex-row items-center justify-center gap-4 ">
-            <div className="w-64 h-96 border bg-indigo-600 z-10 rounded-2xl">
+            <div className="w-64 h-96 shadow-lg bg-indigo-600 z-10 rounded-2xl justify-center flex flex-col items-center">
+              <Image
+                src="/pfp2.svg"
+                width={70}
+                height={70}
+                alt="Profile Icon"
+                className="h-14 md:h-40 md:w-40 "
+              ></Image>
+              <div className="text-2xl flex items-center text-center pl-3 md:pl-5 lg:pl-0">
+                Junshen12312123
+              </div>
+            </div>
+            <div className="w-64 h-96 shadow-lg bg-indigo-600 z-10 rounded-2xl">
               hello
             </div>
-            <div className="w-64 h-96 border bg-indigo-600 z-10 rounded-2xl">
+            <div className="w-64 h-96 shadow-lg bg-indigo-600 z-10 rounded-2xl">
               hello
             </div>
-            <div className="w-64 h-96 border bg-indigo-600 z-10 rounded-2xl">
-              hello
-            </div>
-            <div className="w-64 h-96 border bg-indigo-600 z-10 rounded-2xl">
+            <div className="w-64 h-96 shadow-lg bg-indigo-600 z-10 rounded-2xl">
               hello
             </div>
           </div>

@@ -12,7 +12,7 @@ import useSound from "use-sound";
 import { useRouter } from "next/navigation";
 import CustomButton from "./customButton";
 import { useState } from "react";
-import local from "next/font/local";
+import { signup } from "@/app/entry/action";
 
 export default function SignUpPanel() {
   const [name, setName] = useState("");
@@ -47,7 +47,7 @@ export default function SignUpPanel() {
               Sign Up
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSubmit}>
+          <form>
             <div className="grid gap-4 py-4">
               <div className="flex flex-col items-start gap-4">
                 <Label htmlFor="username" className="">
@@ -55,11 +55,14 @@ export default function SignUpPanel() {
                 </Label>
                 <Input
                   id="username"
+                  type="username"
+                  name="username"
                   defaultValue=""
                   className="col-span-3"
                   onChange={(event) => {
                     setName(event.target.value);
                   }}
+                  required
                 />
               </div>
               <div className="flex flex-col items-start gap-4">
@@ -68,11 +71,14 @@ export default function SignUpPanel() {
                 </Label>
                 <Input
                   id="email"
+                  type="email"
+                  name="email"
                   defaultValue=""
                   className="col-span-3 "
                   onChange={(event) => {
                     setEmail(event.target.value);
                   }}
+                  required
                 />
               </div>
               <div className="flex flex-col items-start gap-4">
@@ -82,25 +88,34 @@ export default function SignUpPanel() {
                 <Input
                   id="password"
                   type="password"
+                  name="password"
                   defaultValue=""
                   className="col-span-3"
                   onChange={(event) => {
                     setPassword(event.target.value);
                   }}
+                  required
                 />
               </div>
             </div>
             <DialogFooter className="mt-3">
-              <CustomButton
-                text="Sign Up"
-                bgColor="#515a92"
-                borderColor="#484877"
+              <button
+                type="submit"
+                formAction={signup}
+                style={{
+                  backgroundColor: "#515a92",
+                  borderColor: "#484877",
+                  width: "210px",
+                }}
+                className={`cursor-pointer transition-all text-white h-16 px-8 py-2 rounded-2xl 
+        border-b-[6px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] text-3xl
+        active:border-b-[2px] active:brightness-90 active:translate-y-[2px]`}
                 onClick={() => {
                   buttonSound();
                 }}
-                w="250px"
-                buttonType="submit"
-              />
+              >
+                Sign Up
+              </button>
             </DialogFooter>
           </form>
         </DialogContent>

@@ -2,6 +2,7 @@
 type CustomButtonProps = {
   text: string;
   onClick: () => void;
+  formAction?: string;
   bgColor: string;
   borderColor: string;
   w?: string;
@@ -10,6 +11,7 @@ type CustomButtonProps = {
 export default function CustomButton({
   text,
   onClick,
+  formAction,
   bgColor,
   borderColor,
   w,
@@ -17,6 +19,7 @@ export default function CustomButton({
 }: CustomButtonProps) {
   return (
     <button
+      formAction={formAction}
       type={buttonType}
       style={{
         backgroundColor: bgColor,
