@@ -86,7 +86,7 @@ export async function fetchRoomPlayers(roomCode: string) {
 
   if (playersError) throw playersError;
 
-  playersWithDetails.map((player) => {
+  const result = playersWithDetails.map((player) => {
     const matchingPlayer = players.find((p) => p.user_id === player.user_id);
     return {
       userId: player.user_id,
@@ -95,7 +95,7 @@ export async function fetchRoomPlayers(roomCode: string) {
       avatarUrl: player.user_avatar || "/pfp1.svg",
     };
   });
-  console.log(playersWithDetails);
+  console.log(result);
 
-  return playersWithDetails;
+  return result;
 }

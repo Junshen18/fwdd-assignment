@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSound from "use-sound";
 import { fetchRoomPlayers } from "@/utils/roomUtils";
+import { supabase } from "@/lib/supabase";
 
 interface Player {
   userId: any;
@@ -36,22 +37,42 @@ export default function LobbyPage({
     router.replace("/lobby/battle");
   };
 
+  const getPlayers = async () => {
+    console.log("Fetching players");
+    const fetchedPlayers = await fetchRoomPlayers(roomCode);
+    const mappedPlayers: Player[] = fetchedPlayers.map((p) => ({
+      userId: p.userId,
+      name: p.name || "Unknown",
+      mp: null,
+      avatarUrl: p.avatarUrl || "/empty.svg",
+    }));
+    console.log(mappedPlayers);
+    setPlayers(mappedPlayers);
+  };
+
   useEffect(() => {
-    const getPlayers = async () => {
-      console.log("Fetching players");
-      const fetchedPlayers = await fetchRoomPlayers(roomCode);
-      const mappedPlayers: Player[] = fetchedPlayers.map((p) => ({
-        userId: p.user_id,
-        name: p.user_name || "Unknown",
-        mp: null,
-        avatarUrl: p.user_avatar || "/empty.svg",
-      }));
-      console.log(mappedPlayers);
-      setPlayers(mappedPlayers);
-    };
     getPlayers();
-    console.log(players);
+
+    // Set up real-time subscription
+    const subscription = supabase
+      .channel(`room:${roomCode}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "player" },
+        handlePlayersChange
+      )
+      .subscribe();
+
+    // Cleanup subscription on component unmount
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [roomCode]);
+
+  const handlePlayersChange = (payload: any) => {
+    console.log("Change received!", payload);
+    getPlayers();
+  };
 
   // Ensure there are always 4 player slots
   while (players.length < 4) {
