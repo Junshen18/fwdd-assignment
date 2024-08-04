@@ -32,3 +32,35 @@ body {
     text-wrap: balance;
   }
 }
+
+@keyframes moveUp {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes moveDown {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.animate-move:nth-child(odd) {
+  animation: moveUp 0.5s ease-in-out;
+}
+
+.animate-move:nth-child(even) {
+  animation: moveDown 0.5s ease-in-out;
+}

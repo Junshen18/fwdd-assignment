@@ -10,32 +10,64 @@ import { Input } from "./ui/input";
 import { Label } from "@radix-ui/react-label";
 import useSound from "use-sound";
 import { useRouter } from "next/navigation";
-import CustomButton from "./customButton";
 import { useState } from "react";
-import { signup } from "@/app/entry/action";
+import { signup } from "@/app/api/auth/action";
 
-export default function SignUpPanel() {
+export default function SignupPanel() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
   const router = useRouter();
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Store login data in localStorage
-    localStorage.setItem("name", name);
-    localStorage.setItem("email", email);
-    localStorage.setItem("password", password);
-    console.log(`Login data stored ${name}, ${password}`);
-    router.push("/findRoom");
+    setError(null);
+    setSuccessMessage(null);
+
+    const formData = new FormData(event.currentTarget);
+
+    try {
+      const result = await signup(formData);
+      if (result.success) {
+        setIsOpen(false); // Close the dialog
+        setSuccessMessage(
+          "Sign up successful! Please check your email to verify your account."
+        );
+        // Optionally, you can clear the form fields here
+        setName("");
+        setEmail("");
+        setPassword("");
+      } else {
+        // Signup failed
+        setError(result.error || "Signup failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      setError("An unexpected error occurred. Please try again.");
+    }
   };
 
   return (
     <>
-      <Dialog>
+      {successMessage && (
+        <div
+          className="fixed top-0 left-0 right-0 bg-green-100 border-b border-green-400 text-green-700 px-4 py-3 text-center"
+          role="alert"
+        >
+          <span className="block sm:inline">{successMessage}</span>
+        </div>
+      )}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <button
-            onClick={() => buttonSound()}
+            onClick={() => {
+              buttonSound();
+              setIsOpen(true);
+            }}
             className="pointer-events-auto hover:animate-bounce md:text-5xl text-3xl leading-none drop-shadow-lg"
           >
             Sign Up
@@ -47,7 +79,7 @@ export default function SignUpPanel() {
               Sign Up
             </DialogTitle>
           </DialogHeader>
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
               <div className="flex flex-col items-start gap-4">
                 <Label htmlFor="username" className="">
@@ -55,13 +87,10 @@ export default function SignUpPanel() {
                 </Label>
                 <Input
                   id="username"
-                  type="username"
                   name="username"
-                  defaultValue=""
+                  value={name}
                   className="col-span-3"
-                  onChange={(event) => {
-                    setName(event.target.value);
-                  }}
+                  onChange={(event) => setName(event.target.value)}
                   required
                 />
               </div>
@@ -73,11 +102,9 @@ export default function SignUpPanel() {
                   id="email"
                   type="email"
                   name="email"
-                  defaultValue=""
-                  className="col-span-3 "
-                  onChange={(event) => {
-                    setEmail(event.target.value);
-                  }}
+                  value={email}
+                  className="col-span-3"
+                  onChange={(event) => setEmail(event.target.value)}
                   required
                 />
               </div>
@@ -89,30 +116,33 @@ export default function SignUpPanel() {
                   id="password"
                   type="password"
                   name="password"
-                  defaultValue=""
+                  value={password}
                   className="col-span-3"
-                  onChange={(event) => {
-                    setPassword(event.target.value);
-                  }}
+                  onChange={(event) => setPassword(event.target.value)}
                   required
                 />
               </div>
             </div>
+            {error && (
+              <div
+                className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+                role="alert"
+              >
+                <span className="block sm:inline">{error}</span>
+              </div>
+            )}
             <DialogFooter className="mt-3">
               <button
                 type="submit"
-                formAction={signup}
                 style={{
                   backgroundColor: "#515a92",
                   borderColor: "#484877",
                   width: "210px",
                 }}
                 className={`cursor-pointer transition-all text-white h-16 px-8 py-2 rounded-2xl 
-        border-b-[6px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] text-3xl
-        active:border-b-[2px] active:brightness-90 active:translate-y-[2px]`}
-                onClick={() => {
-                  buttonSound();
-                }}
+                border-b-[6px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] text-3xl
+                active:border-b-[2px] active:brightness-90 active:translate-y-[2px]`}
+                onClick={() => buttonSound()}
               >
                 Sign Up
               </button>

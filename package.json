@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate-types": "npx supabase gen types typescript --project-id ocsewtoubguwumqumfpg > src/types/database.types.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
@@ -22,6 +23,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.397.0",
     "next": "^14.2.4",
+    "next-auth": "^4.24.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-qr-reader": "^3.0.0-beta-1",
@@ -36,6 +38,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "postcss": "^8",
+    "supabase": "^1.187.10",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }

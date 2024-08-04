@@ -1,4 +1,4 @@
-import { logout } from "@/app/entry/action";
+import { logout } from "@/app/api/auth/action";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
@@ -45,7 +45,7 @@ export default function ProfileDiv({ name, pic }: ProfileDivType) {
           onClick={() => setShowDropdown(!showDropdown)}
         />
         {showDropdown && (
-          <div className="absolute right-0 md:right-[-150px] mt-2 w-48 bg-white rounded-xl shadow-lg z-20">
+          <div className="absolute right-0 md:right-[-130px] mt-2 w-48 bg-white rounded-xl shadow-lg z-20">
             <div className="text-black w-full text-left px-4 py-2 bg-gray-200 md:hidden rounded-t-xl">
               {name}
             </div>

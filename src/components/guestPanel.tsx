@@ -12,18 +12,37 @@ import useSound from "use-sound";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CustomButton from "./customButton";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function GuestPanel() {
   const [name, setName] = useState("");
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
   const [randomNumber, setRandomNumber] = useState(generateRandomNumber());
   const router = useRouter();
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const supabase = createClientComponentClient();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Store login data in localStorage
-    localStorage.setItem("name", name);
-    console.log(`Login data stored ${name}`);
-    router.push("/findRoom");
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: `guest${randomNumber}@temporary.com`,
+        password: `tempPass${randomNumber}`,
+        options: {
+          data: {
+            username: name,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        console.log("Guest session created:", data.user);
+        router.push("/findRoom");
+      }
+    } catch (error) {
+      console.error("Error creating guest session:", error);
+    }
   };
 
   function generateRandomNumber() {
@@ -37,9 +56,9 @@ export default function GuestPanel() {
           <button
             onClick={() => {
               buttonSound();
-              generateRandomNumber();
-              setRandomNumber(randomNumber);
-              setName(`Guest${randomNumber}`);
+              const newRandomNumber = generateRandomNumber();
+              setRandomNumber(newRandomNumber);
+              setName(`Guest${newRandomNumber}`);
             }}
             className="pointer-events-auto hover:animate-bounce md:text-5xl text-3xl leading-none drop-shadow-lg"
           >
@@ -55,13 +74,13 @@ export default function GuestPanel() {
           <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
               <div className="flex flex-col items-start gap-4">
-                <Label htmlFor="email" className="text-right">
+                <Label htmlFor="name" className="text-right">
                   Name:
                 </Label>
                 <Input
-                  id="email"
-                  defaultValue={`Guest${randomNumber}`}
-                  className="col-span-3 "
+                  id="name"
+                  value={name}
+                  className="col-span-3"
                   onChange={(event) => {
                     setName(event.target.value);
                   }}

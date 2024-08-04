@@ -86,7 +86,7 @@ export default function DiceOverlay({ onClose }: DiceOverlayProps) {
       onClick={onClose}
     >
       <div
-        className="bg-yellow-500 p-8 rounded-3xl w-11/12 h-11/12 md:w-3/4 md:h-3/4 text-center relative"
+        className="bg-yellow-500 p-8 rounded-2xl md:rounded-3xl w-11/12 h-11/12 md:w-3/4 md:h-3/4 text-center relative"
         onClick={(e) => e.stopPropagation()}
       >
         <h1 className="text-2xl md:text-4xl">Dice Result</h1>
@@ -95,7 +95,7 @@ export default function DiceOverlay({ onClose }: DiceOverlayProps) {
           className="text-white text-2xl md:text-5xl absolute top-5 right-7 cursor-pointer"
           onClick={onClose}
         />
-        <div className="bg-white p-8 rounded-2xl mt-4 h-[90%] flex flex-col items-center justify-center">
+        <div className="bg-white p-8 rounded-xl md:rounded-2xl mt-4 h-[90%] flex flex-col items-center justify-center">
           {!showQuestion ? (
             <>
               <div className="grid grid-rows-3 grid-cols-2 md:grid-rows-2 md:grid-cols-3 gap-4 md:gap-14 justify-center">

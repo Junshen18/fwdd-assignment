@@ -18,32 +18,94 @@ interface SpellOrb {
 
 export default function SpellOverlay({ onClose }: SpellOverlayProps) {
   const [spellOrbs, setSpellOrbs] = useState<SpellOrb[]>([]);
+  const spellOrbsData = [
+    {
+      spell_orb_name: "Inferno Orb",
+      magic_power: "100",
+      description: "Burns buildings and structures, deals massive area damage.",
+      rarity: "Epic",
+    },
+    {
+      spell_orb_name: "Blazing Orb",
+      magic_power: "150",
+      description: "Inflicts fire damage, creates explosions.",
+      rarity: "Common",
+    },
+    {
+      spell_orb_name: "Storm Orb",
+      magic_power: "200",
+      description: "Calls down lightning strikes, stuns enemies.",
+      rarity: "Rare",
+    },
+    {
+      spell_orb_name: "Death Orb",
+      magic_power: "250",
+      description: "Drains life force, summons undead minions.",
+      rarity: "Epic",
+    },
+    {
+      spell_orb_name: "Nature Orb",
+      magic_power: "180",
+      description: "Heals the land, summons nature spirits.",
+      rarity: "Common",
+    },
+    {
+      spell_orb_name: "Moonlit Orb",
+      magic_power: "300",
+      description: "Restores health and vitality, dispels negative energy.",
+      rarity: "Rare",
+    },
+    {
+      spell_orb_name: "Cosmic Orb",
+      magic_power: "220",
+      description: "Manipulates space and time, creates black holes.",
+      rarity: "Epic",
+    },
+    {
+      spell_orb_name: "Crimson Orb",
+      magic_power: "190",
+      description: "Summons a fiery phoenix, provides protection.",
+      rarity: "Rare",
+    },
+  ];
 
   useEffect(() => {
-    fetchSpellOrbs();
+    const mappedSpellOrbs: SpellOrb[] = spellOrbsData.map((orb, index) => ({
+      orb_id: index + 1,
+      orb_name: orb.spell_orb_name,
+      orb_mp: parseInt(orb.magic_power, 10),
+      orb_desc: orb.description,
+      orb_rarity: orb.rarity,
+    }));
+    setSpellOrbs(mappedSpellOrbs);
+    console.log(mappedSpellOrbs);
   }, []);
 
-  async function fetchSpellOrbs() {
-    try {
-      if (!supabase) {
-        throw new Error("Supabase client is not initialized");
-      }
-      const { data, error } = await supabase.from("spell_orb").select();
+  // async function fetchSpellOrbs() {
+  //   try {
+  //     if (!supabase) {
+  //       throw new Error("Supabase client is not initialized");
+  //     }
+  //     let { data: spell_orb, error } = await supabase
+  //       .from("spell_orb")
+  //       .select("*");
 
-      if (error) throw error;
-      setSpellOrbs(data || []);
-    } catch (error) {
-      console.error("Error fetching spell orbs:", error);
-    }
-  }
+  //     if (error) throw error;
+
+  //     console.log(spell_orb);
+  //     setSpellOrbs(spell_orb as SpellOrb[]);
+  //   } catch (error) {
+  //     console.error("Error fetching spell orbs:", error);
+  //   }
+  // }
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="bg-violet-700 p-8 rounded-3xl w-11/12 h-11/12 md:w-3/4 md:h-3/4 text-center relative"
+        className="bg-violet-700 p-3 md:p-8 rounded-2xl md:rounded-3xl w-11/12 md:w-3/4 my-8 text-center relative"
         onClick={(e) => e.stopPropagation()}
       >
         <h1 className="text-2xl md:text-4xl text-white mb-4">Spell Orbs</h1>
@@ -52,27 +114,37 @@ export default function SpellOverlay({ onClose }: SpellOverlayProps) {
           className="text-white text-2xl md:text-5xl absolute top-5 right-7 cursor-pointer"
           onClick={onClose}
         />
-        <div className="bg-white p-4 md:p-8 rounded-2xl mt-4 h-[90%] overflow-y-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4 md:p-8 rounded-2xl mt-4 max-h-[70vh] overflow-y-auto w-full">
+          <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-4">
             {spellOrbs.map((orb, index) => (
-              <div key={index} className="bg-gray-100 rounded-lg p-4 shadow-md">
-                <Image
-                  src={`/skill${orb.orb_id}.png`}
-                  alt={orb.orb_name}
-                  width={80}
-                  height={80}
-                  className="mx-auto mb-2"
-                />
-                <h2 className="text-lg font-semibold">{orb.orb_name}</h2>
-                <p className="text-sm text-gray-600">{orb.orb_mp}</p>
-                <p className="text-xs mt-2">{orb.orb_desc}</p>
-                <span
-                  className={`text-xs font-bold mt-2 inline-block px-2 py-1 rounded ${getRarityColor(
-                    orb.orb_rarity
-                  )}`}
-                >
-                  {orb.orb_rarity}
-                </span>
+              <div
+                key={index}
+                className="bg-gradient-to-t from-violet-700 to-violet-900 rounded-xl p-4 shadow-md "
+              >
+                <div className="h-24 flex items-center justify-center">
+                  <Image
+                    src={`/skill${orb.orb_id}.png`}
+                    alt={orb.orb_name}
+                    width={80}
+                    height={80}
+                    className="mb-2 w-16 h-16 md:w-20 md:h-20"
+                  />
+                </div>
+                <h2 className="text-sm md:text-lg font-semibold">
+                  {orb.orb_name}
+                </h2>
+                <div className="flex flex-col md:flex-row gap-2 md:justify-between items-center mt-2">
+                  <p className="text-sm text-white">MP: {orb.orb_mp}</p>
+                  <span
+                    className={`text-xs font-bold inline-block px-2 py-1 rounded ${getRarityColor(
+                      orb.orb_rarity
+                    )}`}
+                  >
+                    {orb.orb_rarity}
+                  </span>
+                </div>
+
+                <p className="text-xs mt-2 text-justify">{orb.orb_desc}</p>
               </div>
             ))}
           </div>
@@ -87,9 +159,9 @@ function getRarityColor(rarity: string): string {
     case "common":
       return "bg-gray-200 text-gray-700";
     case "rare":
-      return "bg-blue-200 text-blue-700";
+      return "bg-orange-200 text-orange-700";
     case "epic":
-      return "bg-purple-200 text-purple-700";
+      return "bg-purple-300 text-purple-800";
     default:
       return "bg-gray-200 text-gray-700";
   }

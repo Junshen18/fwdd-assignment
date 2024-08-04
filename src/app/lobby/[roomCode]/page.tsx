@@ -3,16 +3,26 @@ import CustomButton from "@/components/customButton";
 import Header from "@/components/header";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSound from "use-sound";
+import { fetchRoomPlayers } from "@/utils/roomUtils";
 
-export default function LobbyPage() {
+interface Player {
+  userId: any;
+  name: any;
+  mp: any;
+  avatarUrl: string;
+}
+
+export default function LobbyPage({
+  params,
+}: {
+  params: { roomCode: string };
+}) {
+  const { roomCode } = params;
   const [loading, setLoading] = useState(false);
-  const players = [
-    { name: "Junshen", image: "/pfp2.svg" },
-    { name: "Sean", image: "/pfp1.svg" },
-    { name: "Johnson", image: "/pfp4.svg" },
-  ];
+  const [players, setPlayers] = useState<Player[]>([]);
+
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
 
   const router = useRouter();
@@ -23,13 +33,36 @@ export default function LobbyPage() {
     // Loading 1 second
     await new Promise((resolve) => setTimeout(resolve, 3000));
     // Navigate to game page
-    router.push("/lobby/battle");
+    router.replace("/lobby/battle");
   };
+
+  useEffect(() => {
+    const getPlayers = async () => {
+      console.log("Fetching players");
+      const fetchedPlayers = await fetchRoomPlayers(roomCode);
+      const mappedPlayers: Player[] = fetchedPlayers.map((p) => ({
+        userId: p.user_id,
+        name: p.user_name || "Unknown",
+        mp: null,
+        avatarUrl: p.user_avatar || "/empty.svg",
+      }));
+      console.log(mappedPlayers);
+      setPlayers(mappedPlayers);
+    };
+    getPlayers();
+    console.log(players);
+  }, [roomCode]);
 
   // Ensure there are always 4 player slots
   while (players.length < 4) {
-    players.push({ name: "Waiting", image: "/empty.svg" });
+    players.push({
+      userId: null,
+      name: "Waiting",
+      mp: null,
+      avatarUrl: "/empty.svg",
+    });
   }
+  const userId = localStorage.getItem("user_id") || "";
 
   return (
     <>
@@ -57,7 +90,7 @@ export default function LobbyPage() {
               className="rounded-xl text-2xl md:text-4xl w-40 md:w-60 py-4 my-1
               bg-violet-900 flex justify-center bg-red"
             >
-              AEGT
+              {roomCode}
             </div>
           </div>
 
@@ -69,7 +102,7 @@ export default function LobbyPage() {
               >
                 {player.name !== "Waiting" ? (
                   <Image
-                    src={player.image}
+                    src={player.avatarUrl}
                     width={70}
                     height={70}
                     alt="Profile Icon"

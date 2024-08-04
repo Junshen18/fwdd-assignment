@@ -3,22 +3,55 @@ import CustomButton from "@/components/customButton";
 import Header from "@/components/header";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { joinRoom } from "@/utils/roomUtils";
+import checkSession from "@/utils/sessionUtils";
+import { Session } from "@supabase/supabase-js";
+import LoadingSpinner from "@/components/loadingSpinner";
 
 export default function JoinRoomPage() {
   const [code, setCode] = useState("");
+  const [error, setError] = useState("");
+  const [username, setUserName] = useState("");
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   const handleCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCode(event.target.value);
   };
 
-  const handleJoinRoom = () => {
-    // Add your logic to join the room using the entered code
-    console.log("Joining room with code:", code);
-    router.push("/lobby");
+  const handleJoinRoom = async () => {
+    setError("");
+    try {
+      const roomCode = await joinRoom(code, username);
+      console.log("Joining room with code:", roomCode);
+      router.push(`/lobby/${roomCode}`);
+    } catch (error) {
+      console.error("Error joining room:", error);
+      setError(error instanceof Error ? error.message : "Failed to join room");
+    }
   };
 
+  useEffect(() => {
+    const initSession = async () => {
+      const session = await checkSession(router);
+      setSession(session);
+      setLoading(false);
+    };
+    initSession();
+
+    const userName = localStorage.getItem("user_name") || "";
+    setUserName(userName);
+  }, [router]);
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!session) {
+    return null;
+  }
   return (
     <>
       <div>
@@ -55,6 +88,11 @@ export default function JoinRoomPage() {
             borderColor="#ca8a04"
             w="288px"
           />
+          {error && (
+            <p className="absolute top-1/4 bg-gray-200 p-4 text-red-500 text-lg rounded-xl ">
+              {error}
+            </p>
+          )}
         </div>
       </div>
     </>

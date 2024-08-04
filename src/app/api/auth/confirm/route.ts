@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     });
     if (!error) {
       // redirect user to display sign up confirmation page
-      redirect("/auth/confirmation");
+      redirect("/confirmation");
     }
   }
 

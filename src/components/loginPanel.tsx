@@ -11,22 +11,43 @@ import { Label } from "@radix-ui/react-label";
 import useSound from "use-sound";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import CustomButton from "./customButton";
-import { login } from "@/app/entry/action";
+import { login } from "@/app/api/auth/action";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function LoginPanel() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
   const router = useRouter();
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Store login data in localStorage
-    localStorage.setItem("name", name);
-    localStorage.setItem("password", password);
-    console.log(`Login data stored ${name}, ${password}`);
-    router.push("/findRoom");
+    setError(null);
+
+    const formData = new FormData(event.currentTarget);
+
+    try {
+      const result = await login(formData);
+      if (result.success) {
+        // Login successful
+        console.log(`Login successful`);
+        const supabase = createClientComponentClient();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        console.log("Session:", session);
+        router.push("/findRoom");
+      } else {
+        // Login failed
+        setError("Login failed. Please check your credentials and try again.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      router.push("/error");
+    }
   };
+
   return (
     <>
       <Dialog>
@@ -46,11 +67,11 @@ export default function LoginPanel() {
               Login
             </DialogTitle>
           </DialogHeader>
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
               <div className="flex flex-col items-start gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Name:
+                <Label htmlFor="email" className="text-right">
+                  Email:
                 </Label>
                 <Input
                   id="email"
@@ -79,10 +100,10 @@ export default function LoginPanel() {
                 />
               </div>
             </div>
+            {error && <p className="text-red-400 text-sm mt-2 w-60">{error}</p>}
             <DialogFooter className="mt-3 justify-center">
               <button
                 type="submit"
-                formAction={login}
                 style={{
                   backgroundColor: "#515a92",
                   borderColor: "#484877",
