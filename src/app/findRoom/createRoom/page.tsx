@@ -6,18 +6,34 @@ import checkSession from "@/utils/sessionUtils";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/components/loadingSpinner";
 import { Session } from "@supabase/supabase-js";
+import { joinRoom } from "@/utils/roomUtils";
 
 export default function CreateRoom() {
   const [lobbyCode, setLobbyCode] = useState<string | null>(null);
   const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState<string | null>(null);
 
   const handleCreateRoom = async () => {
     try {
       const response = await fetch("/api/generateLobby");
+      if (!response.ok) {
+        throw new Error("Failed to generate lobby code");
+      }
       const data = await response.json();
       setLobbyCode(data.lobbyCode);
+      if (username && data.lobbyCode) {
+        const roomCode = await joinRoom(data.lobbyCode, username);
+        console.log("Joining room with code:", roomCode);
+        if (roomCode) {
+          router.push(`/lobby/${roomCode}`);
+        } else {
+          console.error("Room code is undefined or null");
+        }
+      } else {
+        console.error("Username or lobby code is not set");
+      }
     } catch (error) {
       console.error("Error creating room:", error);
     }
@@ -58,7 +74,9 @@ export default function CreateRoom() {
           <QrScanner />
         </div>
         <button
-          onClick={handleCreateRoom}
+          onClick={() => {
+            handleCreateRoom();
+          }}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           Create Room

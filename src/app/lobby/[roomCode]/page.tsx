@@ -1,12 +1,15 @@
 "use client";
 import CustomButton from "@/components/customButton";
-import Header from "@/components/header";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSound from "use-sound";
-import { fetchRoomPlayers } from "@/utils/roomUtils";
+import { exitRoom, fetchRoomPlayers } from "@/utils/roomUtils";
 import { supabase } from "@/lib/supabase";
+import BackArrow from "@/components/backArrow";
+import ProfileDiv from "@/components/profileName";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 interface Player {
   userId: any;
@@ -23,8 +26,9 @@ export default function LobbyPage({
   const { roomCode } = params;
   const [loading, setLoading] = useState(false);
   const [players, setPlayers] = useState<Player[]>([]);
-
+  const [username, setUsername] = useState<string | null>(null);
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
 
   const router = useRouter();
 
@@ -50,7 +54,39 @@ export default function LobbyPage({
     setPlayers(mappedPlayers);
   };
 
+  const handleExit = async () => {
+    if (!username) return;
+
+    try {
+      await exitRoom(roomCode, username);
+      router.push("/findRoom"); // Navigate to home page or wherever you want
+    } catch (error) {
+      console.error("Error exiting room:", error);
+      // Handle error (e.g., show error message to user)
+    }
+  };
+
+  const handlePlayersChange = (payload: any) => {
+    console.log("Change received!", payload);
+    getPlayers();
+  };
+
+  const handleBackArrowClick = () => {
+    buttonSound();
+    setShowExitConfirmation(true);
+  };
+
+  const handleConfirmExit = async () => {
+    await handleExit();
+  };
+
+  const handleCancelExit = () => {
+    setShowExitConfirmation(false);
+  };
+
   useEffect(() => {
+    const userName = localStorage.getItem("user_name");
+    setUsername(userName);
     getPlayers();
 
     // Set up real-time subscription
@@ -69,11 +105,6 @@ export default function LobbyPage({
     };
   }, [roomCode]);
 
-  const handlePlayersChange = (payload: any) => {
-    console.log("Change received!", payload);
-    getPlayers();
-  };
-
   // Ensure there are always 4 player slots
   while (players.length < 4) {
     players.push({
@@ -88,7 +119,26 @@ export default function LobbyPage({
   return (
     <>
       <div className="w-screen h-screen bg-gradient-to-t from-indigo-900 to-indigo-600">
-        <Header />
+        <div className="w-screen bg-transparent absolute z-30 top-0">
+          <div className="grid grid-cols-3 items-center p-4">
+            <div className="ml-5">
+              <div
+                onClick={handleBackArrowClick}
+                className="cursor-pointer z-1"
+              >
+                <FontAwesomeIcon
+                  icon={faArrowLeft}
+                  className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl"
+                  style={{ color: "#ffffff" }}
+                />
+              </div>
+            </div>
+            <div></div>
+            <div className="flex gap-4 justify-end">
+              <ProfileDiv pic="/pfp2.svg" name={username || "Loading..."} />
+            </div>
+          </div>
+        </div>
 
         {loading && (
           <div className="absolute inset-0 flex  items-center justify-center bg-black bg-opacity-50 z-20">
@@ -102,6 +152,31 @@ export default function LobbyPage({
             </div>
           </div>
         )}
+
+        {/* Exit Confirmation Modal */}
+        {showExitConfirmation && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-xl shadow-xl text-black">
+              <h2 className="text-xl font-bold mb-4">Confirm Exit</h2>
+              <p className="mb-4">Are you sure you want to exit the room?</p>
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={handleCancelExit}
+                  className="px-4 py-2 bg-gray-300 text-white rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmExit}
+                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Exit
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div
           className="w-screen h-screen flex flex-col z-10 gap-12 md:gap-16 bg-cover bg-center"
           style={{ backgroundImage: `url('/lobby-bg.jpg')` }}
