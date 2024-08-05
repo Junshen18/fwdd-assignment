@@ -34,11 +34,33 @@ export default function LobbyPage({
 
   const handleStart = async () => {
     buttonSound();
-    setLoading(true); // Set loading to true
-    // Loading 1 second
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    // Navigate to game page
-    router.replace("/lobby/battle");
+    setLoading(true);
+
+    // Filter out "Waiting" players
+    const activePlayers = players.filter((player) => player.name !== "Waiting");
+    // Check if there are at least 2 active players
+    if (activePlayers.length > 1) {
+      // Loading for 3 seconds
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
+      // Navigate to game page with only active players
+      router.push(
+        `/lobby/battle/${roomCode}?players=${encodeURIComponent(
+          JSON.stringify(activePlayers)
+        )}`
+      );
+    } else {
+      alert("At least 2 players are required to start the game.");
+      while (activePlayers.length < 4) {
+        players.push({
+          userId: null,
+          name: "Waiting",
+          mp: null,
+          avatarUrl: "/empty.svg",
+        });
+        return;
+      }
+    }
   };
 
   const getPlayers = async () => {
@@ -47,7 +69,7 @@ export default function LobbyPage({
     const mappedPlayers: Player[] = fetchedPlayers.map((p) => ({
       userId: p.userId,
       name: p.name || "Unknown",
-      mp: null,
+      mp: 0,
       avatarUrl: p.avatarUrl || "/empty.svg",
     }));
     console.log(mappedPlayers);

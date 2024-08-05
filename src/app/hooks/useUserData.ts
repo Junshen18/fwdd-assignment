@@ -43,6 +43,5 @@ export function useUserData(session: Session | null) {
 
     fetchUserData();
   }, [session, supabase]);
-
   return { userData, loading, error };
 }
