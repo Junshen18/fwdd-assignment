@@ -31,10 +31,9 @@ export default function EntryPage() {
   const LoginSection = () => {
     return (
       <>
-        <div className="flex flex-col gap-10 lg:flex-row justify-between">
+        <div className="flex flex-col gap-14 lg:flex-row">
           <SignUpPanel />
           <LoginPanel />
-          <GuestPanel />
         </div>
       </>
     );
@@ -86,7 +85,7 @@ export default function EntryPage() {
             WIZARD
           </h1>
         </div>
-        <div className="w-3/5">
+        <div className="w-3/5 justify-center items-center flex">
           {start ? <LoginSection /> : <EntrySection />}
         </div>
       </div>
