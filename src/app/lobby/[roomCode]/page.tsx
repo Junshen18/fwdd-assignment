@@ -27,6 +27,7 @@ export default function LobbyPage({
   const [loading, setLoading] = useState(false);
   const [players, setPlayers] = useState<Player[]>([]);
   const [username, setUsername] = useState<string | null>(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
 
@@ -50,6 +51,7 @@ export default function LobbyPage({
         )}`
       );
     } else {
+      setLoading(false);
       alert("At least 2 players are required to start the game.");
       while (activePlayers.length < 4) {
         players.push({
@@ -110,6 +112,9 @@ export default function LobbyPage({
     const userName = localStorage.getItem("user_name");
     setUsername(userName);
     getPlayers();
+
+    const avatar = localStorage.getItem("user_avatar");
+    setAvatar(avatar);
 
     // Set up real-time subscription
     const subscription = supabase
