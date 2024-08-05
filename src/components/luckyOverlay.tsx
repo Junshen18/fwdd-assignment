@@ -5,9 +5,13 @@ import React from "react";
 
 interface LuckyOverlayProps {
   onClose: () => void;
+  gainSpellOrb: (rarity: string) => Promise<void>;
 }
 
-export default function LuckyOverlay({ onClose }: LuckyOverlayProps) {
+export default function LuckyOverlay({
+  onClose,
+  gainSpellOrb,
+}: LuckyOverlayProps) {
   const [showClaimOrb, setShowClaimOrb] = React.useState(false);
 
   const onNo = () => {
@@ -18,7 +22,9 @@ export default function LuckyOverlay({ onClose }: LuckyOverlayProps) {
   };
 
   const onClaimOrb = () => {
-    // Add logic to claim the orb here
+    console.log("Claiming orb...");
+    gainSpellOrb("rare");
+    console.log("Orb claimed, closing overlay...");
     onClose();
   };
 

@@ -1,70 +1,57 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useSound from "use-sound";
 import QuestionCard from "./questionCard";
 import ResultCard from "./resultCard";
+import { supabase } from "@/lib/supabase";
 
 interface DiceOverlayProps {
   onClose: () => void;
+  gainSpellOrb: (rarity: string) => Promise<void>;
 }
 
-export default function DiceOverlay({ onClose }: DiceOverlayProps) {
+export default function DiceOverlay({
+  onClose,
+  gainSpellOrb,
+}: DiceOverlayProps) {
   const [diceSound] = useSound("/soundEffects/dice-sound.mp3");
   const [showQuestion, setShowQuestion] = useState(false);
+  const [questions, setQuestions] = useState<any[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<{
     question: string;
-    answers: string[];
+    answers: any; // This should now be the object with the "nodes" array
     correctAnswer: string;
   } | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [selectedDice, setSelectedDice] = useState<number | null>(null);
 
   const handleDiceClick = (diceNumber: number) => {
     diceSound();
+    setSelectedDice(diceNumber);
     console.log(`Dice ${diceNumber} clicked!`);
+    const selectedQuestion = questions.find((q) => q.quest_id === diceNumber);
 
-    // Simulate getting a random question based on the dice number
-    let randomQuestion;
-    switch (diceNumber) {
-      case 1:
-      case 2:
-        randomQuestion = {
-          question: "What is the capital of France?",
-          answers: ["Paris", "London", "Berlin", "Madrid"],
-          correctAnswer: "Paris",
-        };
-        break;
-      case 3:
-      case 4:
-        randomQuestion = {
-          question: "Which planet is known as the Red Planet?",
-          answers: ["Mars", "Venus", "Jupiter", "Saturn"],
-          correctAnswer: "Mars",
-        };
-        break;
-      case 5:
-      case 6:
-        randomQuestion = {
-          question: "Who painted the Mona Lisa?",
-          answers: [
-            "Leonardo da Vinci",
-            "Vincent van Gogh",
-            "Pablo Picasso",
-            "Michelangelo",
-          ],
-          correctAnswer: "Leonardo da Vinci",
-        };
-        break;
-    }
-
-    if (randomQuestion) {
-      setCurrentQuestion(randomQuestion);
+    if (selectedQuestion) {
+      setCurrentQuestion({
+        question: selectedQuestion.quest_details,
+        answers: selectedQuestion.answer_list, // This should now be the object with the "nodes" array
+        correctAnswer: selectedQuestion.correct_answer,
+      });
       setShowQuestion(true);
       setShowResult(false);
       setSelectedAnswer(null);
+    } else {
+      console.error(`No question found for dice number ${diceNumber}`);
     }
+  };
+
+  const getRarity = (diceNumber: number): string => {
+    if (diceNumber <= 2) return "common";
+    if (diceNumber <= 4) return "rare";
+    return "epic";
   };
 
   const handleAnswerSelected = (answer: string) => {
@@ -79,6 +66,85 @@ export default function DiceOverlay({ onClose }: DiceOverlayProps) {
     setSelectedAnswer(null);
     setCurrentQuestion(null);
   };
+
+  interface Question {
+    quest_id: number;
+    quest_type: string;
+    quest_details: string;
+  }
+
+  interface Answer {
+    answer_id: number;
+    quest_id: number;
+    correct_answer: string;
+    answer1: string;
+    answer2: string;
+    answer3: string;
+  }
+
+  const fetchQuestions = async () => {
+    const { data: questData, error: questError } = (await supabase
+      .from("magic_quest")
+      .select("quest_id, quest_type, quest_details")) as {
+      data: Question[];
+      error: any;
+    };
+
+    if (questError) {
+      console.error("Error fetching questions:", questError);
+      return;
+    }
+
+    const { data: answerData, error: answerError } = (await supabase
+      .from("magic_quest_answer")
+      .select(
+        "answer_id, quest_id, correct_answer, answer1, answer2, answer3"
+      )) as { data: Answer[]; error: any };
+
+    if (answerError) {
+      console.error("Error fetching answers:", answerError);
+      return;
+    }
+
+    const formattedQuestions = questData
+      .map((quest) => {
+        const answer = answerData.find(
+          (ans) => ans.quest_id === quest.quest_id
+        );
+        if (answer) {
+          const allAnswers = [
+            answer.correct_answer,
+            answer.answer1,
+            answer.answer2,
+            answer.answer3,
+          ];
+          // Shuffle the answers
+          const shuffledAnswers = allAnswers.sort(() => Math.random() - 0.5);
+
+          return {
+            quest_id: quest.quest_id,
+            quest_type: quest.quest_type,
+            quest_details: quest.quest_details,
+            answer_list: {
+              nodes: shuffledAnswers.map((text, index) => ({
+                id: index.toString(),
+                text,
+              })),
+            },
+            correct_answer: answer.correct_answer,
+          };
+        }
+        return null;
+      })
+      .filter(Boolean); // Remove any null entries
+
+    console.log("Formatted questions:", formattedQuestions);
+    setQuestions(formattedQuestions);
+  };
+
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
 
   return (
     <div
@@ -116,17 +182,19 @@ export default function DiceOverlay({ onClose }: DiceOverlayProps) {
                 ))}
               </div>
             </>
-          ) : showResult ? (
+          ) : showResult &&
             currentQuestion &&
-            selectedAnswer && (
-              <ResultCard
-                question={currentQuestion.question}
-                selectedAnswer={selectedAnswer}
-                correctAnswer={currentQuestion.correctAnswer}
-                onCorrectAnswer={handleCorrectAnswer}
-                closeDiceOverlay={onClose}
-              />
-            )
+            selectedAnswer &&
+            selectedDice ? (
+            <ResultCard
+              gainSpellOrb={gainSpellOrb}
+              question={currentQuestion.question}
+              selectedAnswer={selectedAnswer}
+              correctAnswer={currentQuestion.correctAnswer}
+              onCorrectAnswer={handleCorrectAnswer}
+              closeDiceOverlay={onClose}
+              rarity={getRarity(selectedDice)}
+            />
           ) : (
             currentQuestion && (
               <QuestionCard

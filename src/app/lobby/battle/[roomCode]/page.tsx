@@ -9,18 +9,32 @@ import SpellOverlay from "@/components/spellOverlay";
 import LuckyOverlay from "@/components/luckyOverlay";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { fetchRoomPlayers } from "@/utils/roomUtils";
 import { Session } from "@supabase/supabase-js";
-import { checkSession } from "@/utils/sessionUtils";
+import checkSession from "@/utils/sessionUtils";
 import LoadingSpinner from "@/components/loadingSpinner";
+import { useUserData } from "@/app/hooks/useUserData";
+
+interface Player {
+  userId: any;
+  name: any;
+  mp: any;
+  avatarUrl: string;
+}
 
 export default function Battle({ params }: { params: { roomCode: string } }) {
   const { roomCode } = params;
-  const [players, setPlayers] = useState<[]>([]);
+  const searchParams = useSearchParams();
+  const [players, setPlayers] = useState<Player[]>([]);
   const [session, setSession] = useState<Session | null>(null);
   const [username, setUsername] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userMp, setUserMp] = useState<number>(0);
+  const [spellOrbsLibrary, setSpellOrbsLibrary] = useState<any[]>([]);
+  const [playerOrbs, setPlayerOrbs] = useState<any[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [showDiceOverlay, setShowDiceOverlay] = useState(false);
   const [showSpellOverlay, setShowSpellOverlay] = useState(false);
@@ -30,38 +44,157 @@ export default function Battle({ params }: { params: { roomCode: string } }) {
   const router = useRouter();
   const supabase = createClientComponentClient();
 
+  const getPlayers = async () => {
+    console.log("Fetching players");
+    const fetchedPlayers = await fetchRoomPlayers(roomCode);
+    const mappedPlayers: Player[] = fetchedPlayers.map((p) => ({
+      userId: p.userId,
+      name: p.name || "Unknown",
+      mp: p.mp || 0,
+      avatarUrl: p.avatarUrl || "/empty.svg",
+    }));
+    console.log(mappedPlayers);
+    setPlayers(mappedPlayers);
+  };
+
+  const handlePlayersChange = (payload: any) => {
+    console.log("Change received!", payload);
+    getPlayers();
+  };
+
+  const gainSpellOrb = async (rarity: string) => {
+    console.log(`Attempting to gain ${rarity} spell orb`);
+
+    if (!rarity) {
+      console.error("Rarity is undefined");
+      return;
+    }
+
+    console.log(`SpellOrbsLibrary:`, spellOrbsLibrary);
+    const filteredOrbs = spellOrbsLibrary.filter(
+      (orb) => orb.orb_rarity == rarity
+    );
+    console.log(`Filtered orbs:`, filteredOrbs);
+
+    if (filteredOrbs.length === 0) {
+      console.log(`No orbs found for rarity: ${rarity}`);
+      return;
+    }
+
+    const randomOrb =
+      filteredOrbs[Math.floor(Math.random() * filteredOrbs.length)];
+    console.log(`Selected orb:`, randomOrb);
+    console.log(`orb_mp: ${randomOrb.orb_mp} ${userMp}`);
+    const newMp = userMp + parseInt(randomOrb.orb_mp);
+    console.log(`New MP: ${newMp}`);
+
+    setUserMp(newMp);
+    setPlayerOrbs([...playerOrbs, randomOrb]);
+
+    console.log(`Updating database...`);
+    const { error } = await supabase
+      .from("player")
+      .update({
+        player_mp: newMp,
+      })
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error("Error updating player data:", error);
+    } else {
+      console.log(`Database updated successfully`);
+    }
+  };
+
   useEffect(() => {
     const initSession = async () => {
       const session = await checkSession(router);
       setSession(session);
+      // if (session) {
+      //   await getUserData(session);
+      // }
       setLoading(false);
     };
+    // const getUserData = async (session: Session) => {
+    //   const { data, error } = await supabase
+    //     .from("user")
+    //     .select("user_name, user_id, user_avatar")
+    //     .eq("user_email", session.user.email)
+    //     .single();
+
+    //   if (error) {
+    //     if (error.code === "PGRST116") {
+    //       console.log("User not found in database");
+    //       return;
+    //     }
+    //     throw error;
+    //   }
+
+    //   if (data) {
+    //     localStorage.setItem("user_name", data.user_name);
+    //     localStorage.setItem("user_id", data.user_id);
+    //     localStorage.setItem("user_avatar", data.user_avatar);
+    //     console.log("User data saved to local storage");
+    //   }
+    // };
     initSession();
+    const userName = localStorage.getItem("user_name");
+    setUsername(userName ?? null);
 
-    async function getUser() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUsername(user?.user_metadata?.username || user?.email || "Unknown");
-    }
-    getUser();
+    async function fetchSpellOrbs() {
+      const { data, error } = await supabase.from("spell_orb").select("*");
 
-    async function loadPlayers() {
-      try {
-        const roomPlayers = await fetchRoomPlayers(roomCode);
-        setPlayers(roomPlayers);
-      } catch (error) {
-        console.error("Error fetching players:", error);
+      if (data) {
+        setSpellOrbsLibrary(data);
+      } else {
+        console.error("Error fetching spell orbs:", error);
       }
     }
 
-    loadPlayers();
-  }, [roomCode, router, supabase]);
+    fetchSpellOrbs();
+    console.log(spellOrbsLibrary);
+
+    const userId = localStorage.getItem("user_id");
+    setUserId(userId ?? null);
+    console.log("userId: ", userId);
+
+    const playersParam = searchParams.get("players");
+    if (playersParam) {
+      try {
+        const parsedPlayers = JSON.parse(
+          decodeURIComponent(playersParam)
+        ) as Player[];
+        setPlayers(parsedPlayers);
+      } catch (error) {
+        console.error("Error parsing players data:", error);
+      }
+    }
+
+    // Set up real-time subscription
+    const subscription = supabase
+      .channel(`room:${roomCode}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "player" },
+        handlePlayersChange
+      )
+      .subscribe();
+
+    // Cleanup subscription on component unmount
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [roomCode, router, supabase, searchParams]);
 
   // press confirm end game button and navigate to leaderboard
-  const handleEndGame = () => {
+  const handleEndGame = async () => {
     setShowEndGame(false);
-    router.push("/leaderboard");
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    router.push(
+      `/leaderboard/${roomCode}?players=${encodeURIComponent(
+        JSON.stringify(players)
+      )}`
+    );
   };
 
   if (loading) {
@@ -78,7 +211,7 @@ export default function Battle({ params }: { params: { roomCode: string } }) {
         className="left-0 w-screen h-screen bg-cover bg-center"
         style={{ backgroundImage: `url('/battle-bg.jpg')` }}
       >
-        <div className="w-screen h-screen flex flex-col z-10 md:justify-between gap-2 md:gap-0 ">
+        <div className="w-screen h-screen flex flex-col z-10  gap-2 md:gap-0 ">
           <div className="flex flex-row justify-between items-center m-2">
             <div className="w-1/3 ">
               <button
@@ -102,7 +235,7 @@ export default function Battle({ params }: { params: { roomCode: string } }) {
               </div>
             </div>
             <div className="w-1/3 flex justify-end">
-              <ProfileDiv pic="/pfp2.svg" name={username} />
+              <ProfileDiv pic="/pfp2.svg" name={username ?? ""} />
             </div>
           </div>
 
@@ -129,71 +262,82 @@ export default function Battle({ params }: { params: { roomCode: string } }) {
               </div>
             ))}
           </div>
-
-          <div className="flex flex-row justify-between mx-8 my-8">
-            <div
-              onClick={() => {
-                buttonSound();
-                setShowSpellOverlay(true);
-              }}
-              className={`bg-purple-600 border-purple-800 cursor-pointer transition-all text-white h-24 w-24 md:h-40 md:w-40 rounded-full 
+          <div className="absolute w-full bottom-10">
+            <div className=" flex flex-row justify-between mx-8 my-8">
+              <div
+                onClick={() => {
+                  buttonSound();
+                  setShowSpellOverlay(true);
+                }}
+                className={`bg-purple-600 border-purple-800 cursor-pointer transition-all text-white h-24 w-24 md:h-40 md:w-40 rounded-full 
         border-b-[10px] md:border-b-[16px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[12px]
         active:border-b-[6px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center`}
-            >
-              <Image
-                src="/spellbook.png"
-                width={112}
-                height={112}
-                alt="Spellbook Icon"
-                className="w-14 h-14 md:w-24 md:h-24"
-              />
-            </div>
-            <div
-              onClick={() => {
-                buttonSound();
-                setShowDiceOverlay(true);
-              }}
-              className={`bg-yellow-500 border-yellow-700 cursor-pointer transition-all text-white h-24 w-24 md:h-40 md:w-40 rounded-full 
+              >
+                <Image
+                  src="/spellbook.png"
+                  width={112}
+                  height={112}
+                  alt="Spellbook Icon"
+                  className="w-14 h-14 md:w-24 md:h-24"
+                />
+              </div>
+              <div
+                onClick={() => {
+                  buttonSound();
+                  setShowDiceOverlay(true);
+                }}
+                className={`bg-yellow-500 border-yellow-700 cursor-pointer transition-all text-white h-24 w-24 md:h-40 md:w-40 rounded-full 
               border-b-[10px] md:border-b-[16px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[12px]
               active:border-b-[6px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center`}
-            >
-              <Image
-                src="/dice.png"
-                width={112}
-                height={112}
-                alt="Dice Icon"
-                className="w-16 h-16 md:w-28 md:h-28"
-              />
-            </div>
-            <div
-              onClick={() => {
-                buttonSound();
-                setShowLuckyOverlay(true);
-              }}
-              className={`bg-green-800 border-green-900 cursor-pointer transition-all text-white h-24 w-24 md:h-40 md:w-40 rounded-full 
+              >
+                <Image
+                  src="/dice.png"
+                  width={112}
+                  height={112}
+                  alt="Dice Icon"
+                  className="w-16 h-16 md:w-28 md:h-28"
+                />
+              </div>
+
+              <div
+                onClick={() => {
+                  buttonSound();
+                  setShowLuckyOverlay(true);
+                }}
+                className={`bg-green-800 border-green-900 cursor-pointer transition-all text-white h-24 w-24 md:h-40 md:w-40 rounded-full 
         border-b-[10px] md:border-b-[16px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[12px]
         active:border-b-[6px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center`}
-            >
-              <Image
-                src="/lucky-clover.png"
-                width={112}
-                height={112}
-                alt="Lucky Clover"
-                className="w-14 h-14 md:w-24 md:h-24"
-              />
+              >
+                <Image
+                  src="/lucky-clover.png"
+                  width={112}
+                  height={112}
+                  alt="Lucky Clover"
+                  className="w-14 h-14 md:w-24 md:h-24"
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {showDiceOverlay && (
-        <DiceOverlay onClose={() => setShowDiceOverlay(false)} />
+        <DiceOverlay
+          onClose={() => setShowDiceOverlay(false)}
+          gainSpellOrb={gainSpellOrb}
+        />
       )}
       {showSpellOverlay && (
-        <SpellOverlay onClose={() => setShowSpellOverlay(false)} />
+        <SpellOverlay
+          onClose={() => setShowSpellOverlay(false)}
+          spellOrbs={playerOrbs}
+        />
       )}
       {showLuckyOverlay && (
-        <LuckyOverlay onClose={() => setShowLuckyOverlay(false)} />
+        <LuckyOverlay
+          onClose={() => setShowLuckyOverlay(false)}
+          gainSpellOrb={gainSpellOrb}
+        />
       )}
       {showEndGame && (
         <div
@@ -211,13 +355,11 @@ export default function Battle({ params }: { params: { roomCode: string } }) {
               onClick={() => setShowEndGame(false)}
             />
 
-            <div className="bg-white md:p-28 p-2 rounded-xl md:rounded-2xl mt-4 h-[90%] flex flex-col items-center justify-center gap-4 md:gap-10">
+            <div className="bg-white md:p-28 p-5 rounded-xl md:rounded-2xl mt-4 h-[90%] flex flex-col items-center justify-center gap-4 md:gap-10">
               <h3 className="text-green-900 text-2xl md:text-4xl w-full text-center mb-4">
-                The first player to reach the end gains extra 100 magic powers!
+                Proceed to the leaderboard!
               </h3>
-              <div className="inline-block px-2 py-2 rounded-xl bg-violet-500 text-white w-40 h-16 text-2xl self-center">
-                +100 MP
-              </div>
+
               <div className="flex flex-row justify-between gap-4 md:gap-8 mt-4 ">
                 <button
                   onClick={handleEndGame}
