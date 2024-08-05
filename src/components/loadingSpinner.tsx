@@ -1,7 +1,7 @@
 export default function LoadingSpinner() {
   return (
-    <div className="h-screen w-screen flex items-center justify-center">
-      <div className="grid min-h-[140px] w-full place-items-center overflow-x-scroll rounded-lg p-6 lg:overflow-visible">
+    <div className="h-screen w-screen flex items-center justify-center bg-black bg-opacity-50 ">
+      <div className="flex min-h-[140px] place-items-center w-full items-center justify-center  rounded-lg p-6 lg:overflow-visible">
         <svg
           className="text-gray-300 animate-spin"
           viewBox="0 0 64 64"
