@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/types/database.types";
 
 type ProfileDivType = {
   name: string;
@@ -12,10 +14,36 @@ type ProfileDivType = {
 
 export default function ProfileDiv({ name, pic }: ProfileDivType) {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [changeAvatar, setChangeAvatar] = useState(false);
+  const [changeAvatarPanel, setChangeAvatarPanel] = useState(false);
+  const [avatar, setAvatar] = useState(pic);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const supabase = createClientComponentClient<Database>();
 
   useEffect(() => {
+    // fetch avatar from supabase
+    const fetchAvatar = async () => {
+      const userId = localStorage.getItem("user_id");
+      if (!userId) return;
+
+      console.log("fetching avatar..");
+      const { data, error } = await supabase
+        .from("user")
+        .select("user_avatar")
+        .eq("user_id", userId)
+        .single();
+      console.log("fetched avatar:", data);
+
+      if (error) {
+        console.error("Error fetching avatar:", error);
+      } else {
+        setAvatar(data.user_avatar || "/pfp1.svg");
+      }
+    };
+    fetchAvatar();
+
+    // handle click outside of dropdown
     function handleClickOutside(event: MouseEvent) {
       if (
         dropdownRef.current &&
@@ -31,15 +59,50 @@ export default function ProfileDiv({ name, pic }: ProfileDivType) {
     };
   }, []);
 
+  // handle logout
   const handleLogout = () => {
     logout();
+  };
+
+  // handle change avatar
+  const changeAvatar = async (avatarIndex: number) => {
+    setIsLoading(true);
+    const newAvatarUrl = `/pfp${avatarIndex}.svg`;
+
+    try {
+      const userId = localStorage.getItem("user_id");
+      if (!userId) throw new Error("User ID not found");
+
+      // update avatar in supabase
+      const { error } = await supabase
+        .from("user")
+        .update({ user_avatar: newAvatarUrl })
+        .eq("user_id", userId);
+
+      if (error) throw error;
+
+      // update avatar in local storage
+      localStorage.setItem("user_avatar", newAvatarUrl);
+
+      // update avatar in state
+      setAvatar(newAvatarUrl);
+
+      // close change avatar panel and show dropdown
+      setChangeAvatarPanel(false);
+      setShowDropdown(!showDropdown);
+      router.refresh(); // Refresh the page to update the avatar
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="relative flex items-center justify-end md:mr-4 lg:mr-10">
       <div className="relative" ref={dropdownRef}>
         <Image
-          src={pic}
+          src={avatar}
           width={70}
           height={70}
           alt="Profile Icon"
@@ -52,7 +115,7 @@ export default function ProfileDiv({ name, pic }: ProfileDivType) {
               {name}
             </div>
             <button
-              onClick={() => setChangeAvatar(true)}
+              onClick={() => setChangeAvatarPanel(true)}
               className="block w-full text-left px-4 py-2 text-sm rounded-xl text-gray-700 hover:bg-gray-100"
             >
               Change Avatar
@@ -65,20 +128,20 @@ export default function ProfileDiv({ name, pic }: ProfileDivType) {
             </button>
           </div>
         )}
-        {changeAvatar && (
+        {changeAvatarPanel && (
           <div
             className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 overflow-y-auto"
-            onClick={() => setChangeAvatar(false)}
+            onClick={() => setChangeAvatarPanel(false)}
           >
             <div className="bg-indigo-700 rounded-xl w-3/4 h-1/2 md:w-2/3 lg:h-4/5 items-center justify-center relative flex flex-col p-5 text-2xl">
               <h1 className="text-2xl md:text-4xl">Change Avatar</h1>
               <FontAwesomeIcon
                 icon={faXmark}
                 className="text-white text-2xl md:text-5xl absolute top-5 right-7 cursor-pointer"
-                onClick={() => setChangeAvatar(false)}
+                onClick={() => setChangeAvatarPanel(false)}
               />
               <div className="flex justify-center items-center h-full bg-slate-100 rounded-xl w-11/12 mt-4 p-4 overflow-y-auto">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-left justify-left self-center w-fit">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-left justify-left self-start w-fit">
                   {[...Array(8)].map((_, index) => (
                     <div
                       key={index}
@@ -92,7 +155,7 @@ export default function ProfileDiv({ name, pic }: ProfileDivType) {
                         className="rounded-full cursor-pointer hover:scale-125 w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 transition-transform"
                         onClick={(e) => {
                           e.stopPropagation();
-                          // Add logic to change the avatar
+                          changeAvatar(index + 1);
                           console.log(`Selected avatar: pfp${index + 1}.svg`);
                         }}
                       />

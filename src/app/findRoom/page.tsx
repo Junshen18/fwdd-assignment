@@ -14,6 +14,7 @@ import { decrypt, encrypt } from "@/utils/encryption";
 
 export default function FindRoomPage() {
   const [session, setSession] = useState<Session | null>(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
   const {
     userData,
     loading: userLoading,
@@ -66,6 +67,9 @@ export default function FindRoomPage() {
       }
     };
 
+    const avatar = localStorage.getItem("user_avatar");
+    setAvatar(avatar);
+
     checkSession();
   }, [router, supabase]);
 
@@ -89,7 +93,7 @@ export default function FindRoomPage() {
       >
         <div className="w-screen flex gap-4 justify-end mt-4 mr-4">
           <ProfileDiv
-            pic="/pfp2.svg"
+            pic={avatar || "/pfp1.svg"}
             name={userData?.user_name || "Loading..."}
           />
         </div>
