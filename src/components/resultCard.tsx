@@ -8,6 +8,8 @@ interface ResultCardProps {
   correctAnswer: string;
   onCorrectAnswer: () => void;
   closeDiceOverlay: () => void;
+  gainSpellOrb: (rarity: string) => Promise<void>;
+  rarity: string;
 }
 
 export default function ResultCard({
@@ -16,11 +18,14 @@ export default function ResultCard({
   correctAnswer,
   onCorrectAnswer,
   closeDiceOverlay,
+  gainSpellOrb,
+  rarity,
 }: ResultCardProps) {
   const isCorrect = selectedAnswer === correctAnswer;
 
   const handleButtonClick = () => {
     if (isCorrect) {
+      gainSpellOrb(rarity);
       onCorrectAnswer();
     }
     closeDiceOverlay();

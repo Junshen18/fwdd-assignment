@@ -69,21 +69,27 @@ export type Database = {
       magic_quest_answer: {
         Row: {
           answer_id: number;
-          answer_list: Json | null;
+          answer1: string | null;
+          answer2: string | null;
+          answer3: string | null;
           correct_answer: string | null;
           created_at: string;
           quest_id: number | null;
         };
         Insert: {
           answer_id?: number;
-          answer_list?: Json | null;
+          answer1?: string | null;
+          answer2?: string | null;
+          answer3?: string | null;
           correct_answer?: string | null;
           created_at?: string;
           quest_id?: number | null;
         };
         Update: {
           answer_id?: number;
-          answer_list?: Json | null;
+          answer1?: string | null;
+          answer2?: string | null;
+          answer3?: string | null;
           correct_answer?: string | null;
           created_at?: string;
           quest_id?: number | null;

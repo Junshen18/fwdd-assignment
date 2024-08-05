@@ -2,7 +2,11 @@
 import { useState } from "react";
 import { QrReader } from "react-qr-reader";
 
-export default function QrScanner() {
+interface QrScannerProps {
+  onScan: (data: string | null) => void;
+}
+
+export default function QrScanner({ onScan }: QrScannerProps) {
   const [data, setData] = useState<string>("No result");
 
   return (
@@ -15,13 +19,14 @@ export default function QrScanner() {
           onResult={(result: any, error: any) => {
             if (result) {
               setData(result?.text);
+              onScan(result?.text);
             }
             if (error) {
               console.error(error);
+              onScan(null);
             }
           }}
         />
-        <p className="text-center">Result: {data}</p>
       </div>
     </>
   );
