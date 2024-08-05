@@ -7,7 +7,7 @@ export async function joinRoom(code: string, playerName: string) {
   if (!code) {
     throw new Error("Please enter a room code");
   }
-
+  console.log("code: ", code);
   // 1. Validate Room code & 2. Check Room status
   const { data: room, error: roomError } = await supabase
     .from("room")
@@ -27,6 +27,7 @@ export async function joinRoom(code: string, playerName: string) {
 
   if (countError) throw countError;
   if (count && count >= 4) throw new Error("Room is full");
+  console.log("count: ", count);
 
   // 4. Add player data into player's table
   // Fetch user_id from supabase user table

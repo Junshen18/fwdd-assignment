@@ -26,7 +26,7 @@ export default function JoinRoomPage() {
     setError("");
     try {
       console.log("username: ", username, code);
-      const roomCode = await joinRoom(code, username);
+      const roomCode = await joinRoom(code.toUpperCase(), username);
       console.log("Joining room with code:", roomCode);
       router.push(`/lobby/${roomCode}`);
     } catch (error) {
