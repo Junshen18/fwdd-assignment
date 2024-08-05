@@ -35,8 +35,16 @@ export async function joinRoom(code: string, playerName: string) {
     .select("user_id")
     .eq("user_name", playerName)
     .single();
-
-  if (userError) throw new Error("Error fetching user data");
+  console.log("playerName: ", playerName);
+  if (userError) {
+    if (userError.code === "PGRST116") {
+      console.error("User not found in database");
+      throw new Error(
+        "User not found. Please ensure you're logged in and have set up your profile."
+      );
+    }
+    throw userError;
+  }
   if (!userData) throw new Error("User not found");
 
   const userId = userData.user_id;
