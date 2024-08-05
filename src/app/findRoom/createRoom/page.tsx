@@ -6,7 +6,8 @@ import checkSession from "@/utils/sessionUtils";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/components/loadingSpinner";
 import { Session } from "@supabase/supabase-js";
-import { joinRoom } from "@/utils/roomUtils";
+import { supabase } from "@/lib/supabase";
+import { decrypt } from "@/utils/encryption";
 
 export default function CreateRoom() {
   const [lobbyCode, setLobbyCode] = useState<string | null>(null);
@@ -14,20 +15,56 @@ export default function CreateRoom() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<string | null>(null);
+  const [qrData, setQrData] = useState<string | null>(null);
 
-  const handleCreateRoom = async () => {
+  const handleScan = async (scannedData?: string | null) => {
+    const decryptedData = decrypt(scannedData || "", 3);
+    setQrData(decryptedData);
+  };
+
+  const handleCreateRoom = async (scannedData?: string) => {
     try {
       const response = await fetch("/api/generateLobby");
+      // if response is not ok, throw an error
       if (!response.ok) {
         throw new Error("Failed to generate lobby code");
       }
       const data = await response.json();
       setLobbyCode(data.lobbyCode);
-      if (username && data.lobbyCode) {
-        const roomCode = await joinRoom(data.lobbyCode, username);
-        console.log("Joining room with code:", roomCode);
-        if (roomCode) {
-          router.push(`/lobby/${roomCode}`);
+
+      const userName = localStorage.getItem("user_name");
+      setUsername(userName);
+      console.log("Username: ", username, lobbyCode);
+      // if username and lobby code are set, join the room
+      if (username && lobbyCode) {
+        // const roomCode = await joinRoom(data.lobbyCode, username);
+
+        // get room id by using room code
+        const { data: room, error: roomError } = await supabase
+          .from("room")
+          .select("room_id, room_code, status")
+          .eq("room_code", lobbyCode)
+          .single();
+
+        //get user id
+        const user_id = parseInt(localStorage.getItem("user_id") || "0", 10);
+
+        // add player to room real time database
+        const { data: playerData, error: playerError } = await supabase
+          .from("player")
+          .insert([
+            {
+              user_id: user_id,
+              room_id: room?.room_id,
+              player_mp: 0,
+            },
+          ])
+          .select();
+
+        console.log("Joining room with code:", lobbyCode);
+
+        if (lobbyCode) {
+          router.push(`/lobby/${lobbyCode}`);
         } else {
           console.error("Room code is undefined or null");
         }
@@ -46,7 +83,11 @@ export default function CreateRoom() {
       setLoading(false);
     };
     initSession();
-  }, [router]);
+
+    if (qrData === process.env.NEXT_PUBLIC_CREATE_ROOM_URL) {
+      handleCreateRoom();
+    }
+  }, [router, qrData]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -71,12 +112,11 @@ export default function CreateRoom() {
           Scan the Game QR to create room
         </h1>
         <div className="w-96">
-          <QrScanner />
+          <QrScanner onScan={handleScan} />
         </div>
+
         <button
-          onClick={() => {
-            handleCreateRoom();
-          }}
+          onClick={() => handleCreateRoom()}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           Create Room

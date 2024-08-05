@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSound from "use-sound";
 import { useUserData } from "../hooks/useUserData";
+import { decrypt, encrypt } from "@/utils/encryption";
 
 export default function FindRoomPage() {
   const [session, setSession] = useState<Session | null>(null);
@@ -38,6 +39,30 @@ export default function FindRoomPage() {
         router.push("/");
       } else {
         setSession(session);
+        await getUserData(session);
+      }
+    };
+
+    const getUserData = async (session: Session) => {
+      const { data, error } = await supabase
+        .from("user")
+        .select("user_name, user_id, user_avatar")
+        .eq("user_email", session.user.email)
+        .single();
+
+      if (error) {
+        if (error.code === "PGRST116") {
+          console.log("User not found in database");
+          return;
+        }
+        throw error;
+      }
+
+      if (data) {
+        localStorage.setItem("user_name", data.user_name);
+        localStorage.setItem("user_id", data.user_id);
+        localStorage.setItem("user_avatar", data.user_avatar);
+        console.log("User data saved to local storage");
       }
     };
 
@@ -81,7 +106,7 @@ export default function FindRoomPage() {
             WIZARD
           </h1>
         </div>
-        <div className="h-auto flex flex-col gap-10 z-10  ">
+        <div className="h-auto flex flex-col gap-10 z-10 mb-10">
           <div className="h-16">
             <CustomButton
               text="Create Room"

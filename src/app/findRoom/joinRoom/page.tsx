@@ -8,6 +8,7 @@ import { joinRoom } from "@/utils/roomUtils";
 import checkSession from "@/utils/sessionUtils";
 import { Session } from "@supabase/supabase-js";
 import LoadingSpinner from "@/components/loadingSpinner";
+import { useUserData } from "@/app/hooks/useUserData";
 
 export default function JoinRoomPage() {
   const [code, setCode] = useState("");
@@ -24,6 +25,7 @@ export default function JoinRoomPage() {
   const handleJoinRoom = async () => {
     setError("");
     try {
+      console.log("username: ", username, code);
       const roomCode = await joinRoom(code, username);
       console.log("Joining room with code:", roomCode);
       router.push(`/lobby/${roomCode}`);
@@ -41,8 +43,9 @@ export default function JoinRoomPage() {
     };
     initSession();
 
-    const userName = localStorage.getItem("user_name") || "";
-    setUserName(userName);
+    const username = localStorage.getItem("user_name");
+    setUserName(username ?? "");
+    console.log("username: ", username);
   }, [router]);
 
   if (loading) {
