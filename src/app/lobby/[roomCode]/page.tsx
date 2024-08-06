@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSound from "use-sound";
-import { exitRoom, fetchRoomPlayers } from "@/utils/roomUtils";
+import { closeRoom, exitRoom, fetchRoomPlayers } from "@/utils/roomUtils";
 import { supabase } from "@/lib/supabase";
 import BackArrow from "@/components/backArrow";
 import ProfileDiv from "@/components/profileName";
@@ -50,6 +50,7 @@ export default function LobbyPage({
           JSON.stringify(activePlayers)
         )}`
       );
+      await closeRoom(roomCode);
     } else {
       setLoading(false);
       alert("At least 2 players are required to start the game.");
@@ -162,7 +163,7 @@ export default function LobbyPage({
             </div>
             <div></div>
             <div className="flex gap-4 justify-end">
-              <ProfileDiv pic="/pfp2.svg" name={username || "Loading..."} />
+              <ProfileDiv name={username || "Loading..."} />
             </div>
           </div>
         </div>
@@ -180,7 +181,7 @@ export default function LobbyPage({
           </div>
         )}
 
-        {/* Exit Confirmation Modal */}
+        {/* Exit Confirmation Message */}
         {showExitConfirmation && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-xl shadow-xl text-black">
