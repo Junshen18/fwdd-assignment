@@ -47,10 +47,6 @@ export default function LeaderboardPage({
     }
   }, [searchParams]);
 
-  const handleLeaveRoom = () => {
-    router.replace("/findRoom");
-  };
-
   const handleConfirmExit = async () => {
     await handleExit();
   };

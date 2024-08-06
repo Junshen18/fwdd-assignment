@@ -109,33 +109,9 @@ export default function Battle({ params }: { params: { roomCode: string } }) {
     const initSession = async () => {
       const session = await checkSession(router);
       setSession(session);
-      // if (session) {
-      //   await getUserData(session);
-      // }
       setLoading(false);
     };
-    // const getUserData = async (session: Session) => {
-    //   const { data, error } = await supabase
-    //     .from("user")
-    //     .select("user_name, user_id, user_avatar")
-    //     .eq("user_email", session.user.email)
-    //     .single();
 
-    //   if (error) {
-    //     if (error.code === "PGRST116") {
-    //       console.log("User not found in database");
-    //       return;
-    //     }
-    //     throw error;
-    //   }
-
-    //   if (data) {
-    //     localStorage.setItem("user_name", data.user_name);
-    //     localStorage.setItem("user_id", data.user_id);
-    //     localStorage.setItem("user_avatar", data.user_avatar);
-    //     console.log("User data saved to local storage");
-    //   }
-    // };
     initSession();
     const userName = localStorage.getItem("user_name");
     setUsername(userName ?? null);
