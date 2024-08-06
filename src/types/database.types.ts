@@ -9,39 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      count_mp: {
-        Row: {
-          book_id: number | null;
-          created_at: string;
-          player_id: number | null;
-        };
-        Insert: {
-          book_id?: number | null;
-          created_at?: string;
-          player_id?: number | null;
-        };
-        Update: {
-          book_id?: number | null;
-          created_at?: string;
-          player_id?: number | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "count_mp_book_id_fkey";
-            columns: ["book_id"];
-            isOneToOne: false;
-            referencedRelation: "room";
-            referencedColumns: ["room_id"];
-          },
-          {
-            foreignKeyName: "count_mp_player_id_fkey";
-            columns: ["player_id"];
-            isOneToOne: false;
-            referencedRelation: "player";
-            referencedColumns: ["player_id"];
-          }
-        ];
-      };
       magic_quest: {
         Row: {
           created_at: string;
@@ -142,7 +109,6 @@ export type Database = {
           room_code: string | null;
           room_id: number;
           status: string;
-          player_list: Json | null;
         };
         Insert: {
           created_at?: string;
@@ -150,7 +116,6 @@ export type Database = {
           room_code?: string | null;
           room_id?: number;
           status?: string;
-          player_list: Json | null;
         };
         Update: {
           created_at?: string;
@@ -159,7 +124,6 @@ export type Database = {
           room_code?: string | null;
           room_id?: number;
           status?: string;
-          player_list: Json | null;
         };
         Relationships: [
           {
