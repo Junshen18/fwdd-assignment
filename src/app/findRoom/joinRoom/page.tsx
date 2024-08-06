@@ -8,7 +8,6 @@ import { joinRoom } from "@/utils/roomUtils";
 import checkSession from "@/utils/sessionUtils";
 import { Session } from "@supabase/supabase-js";
 import LoadingSpinner from "@/components/loadingSpinner";
-import { useUserData } from "@/app/hooks/useUserData";
 
 export default function JoinRoomPage() {
   const [code, setCode] = useState("");

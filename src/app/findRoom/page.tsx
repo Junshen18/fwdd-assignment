@@ -1,7 +1,5 @@
 "use client";
-import AudioButton from "@/components/audioButton";
 import CustomButton from "@/components/customButton";
-import Header from "@/components/header";
 import LoadingSpinner from "@/components/loadingSpinner";
 import ProfileDiv from "@/components/profileName";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -9,28 +7,26 @@ import { Session } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSound from "use-sound";
-import { useUserData } from "../hooks/useUserData";
-import { decrypt, encrypt } from "@/utils/encryption";
 
 export default function FindRoomPage() {
   const [session, setSession] = useState<Session | null>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
-  const {
-    userData,
-    loading: userLoading,
-    error: userError,
-  } = useUserData(session);
+  const [Error, setError] = useState<Error | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [buttonSound] = useSound("/soundEffects/button-click.mp3");
   const router = useRouter();
   const supabase = createClientComponentClient();
 
   useEffect(() => {
+    setLoading(true);
     const checkSession = async () => {
       const {
         data: { session },
         error,
       } = await supabase.auth.getSession();
       if (error) {
+        setError(error);
         console.error("Error fetching session:", error);
         router.push("/");
         return;
@@ -43,6 +39,7 @@ export default function FindRoomPage() {
         await getUserData(session);
       }
     };
+    setLoading(false);
 
     const getUserData = async (session: Session) => {
       const { data, error } = await supabase
@@ -56,29 +53,30 @@ export default function FindRoomPage() {
           console.log("User not found in database");
           return;
         }
-        throw error;
+        console.error("Error fetching user data:", error);
+        router.push("/");
+        return;
       }
-
+      console.log(data);
       if (data) {
         localStorage.setItem("user_name", data.user_name);
         localStorage.setItem("user_id", data.user_id);
         localStorage.setItem("user_avatar", data.user_avatar);
         console.log("User data saved to local storage");
       }
+      setUserName(data.user_name);
+      setAvatar(data.user_avatar);
     };
-
-    const avatar = localStorage.getItem("user_avatar");
-    setAvatar(avatar);
 
     checkSession();
   }, [router, supabase]);
 
-  if (userLoading) {
+  if (loading) {
     return <LoadingSpinner />;
   }
 
-  if (userError) {
-    console.error("Error fetching user data:", userError);
+  if (Error) {
+    console.error("Error fetching user data:", Error);
   }
 
   if (!session) {
@@ -92,10 +90,7 @@ export default function FindRoomPage() {
         style={{ backgroundImage: `url('/background.png')` }}
       >
         <div className="w-screen flex gap-4 justify-end mt-4 mr-4">
-          <ProfileDiv
-            pic={avatar || "/pfp1.svg"}
-            name={userData?.user_name || "Loading..."}
-          />
+          <ProfileDiv name={userName || "Loading..."} />
         </div>
 
         <div
