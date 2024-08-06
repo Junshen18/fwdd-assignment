@@ -21,7 +21,7 @@ export default function Header() {
         </div>
         <div></div>
         <div className="flex gap-4 justify-end">
-          <ProfileDiv pic="/pfp2.svg" name={username || "Loading..."} />
+          <ProfileDiv name={username || "Loading..."} />
         </div>
       </div>
     </div>
