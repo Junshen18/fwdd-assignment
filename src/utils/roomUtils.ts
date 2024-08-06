@@ -7,13 +7,13 @@ export async function joinRoom(code: string, playerName: string) {
   if (!code) {
     throw new Error("Please enter a room code");
   }
-  console.log("code: ", code);
+
   // 1. Validate Room code & 2. Check Room status
   const { data: room, error: roomError } = await supabase
     .from("room")
     .select("room_id, room_code, status")
     .eq("room_code", code)
-    .single();
+    .maybeSingle();
 
   if (roomError) throw roomError;
   if (!room) throw new Error("Room not found");
@@ -27,7 +27,6 @@ export async function joinRoom(code: string, playerName: string) {
 
   if (countError) throw countError;
   if (count && count >= 4) throw new Error("Room is full");
-  console.log("count: ", count);
 
   // 4. Add player data into player's table
   // Fetch user_id from supabase user table
@@ -106,7 +105,7 @@ export async function exitRoom(roomCode: string, playerName: string) {
   if (count === 0) {
     const { error: roomDeleteError } = await supabase
       .from("room")
-      .delete()
+      .update({ status: "closed" })
       .eq("room_id", room.room_id);
 
     if (roomDeleteError) throw roomDeleteError;
@@ -157,4 +156,26 @@ export async function fetchRoomPlayers(roomCode: string) {
   console.log(result);
 
   return result;
+}
+
+export async function closeRoom(roomCode: string) {
+  // 1. Validate Room code and fetch room_id
+  const { data: room, error: roomError } = await supabase
+    .from("room")
+    .select("room_id")
+    .eq("room_code", roomCode)
+    .single();
+
+  if (roomError) throw roomError;
+  if (!room) throw new Error("Room not found");
+
+  // 2. Update room status to closed
+  const { error: updateError } = await supabase
+    .from("room")
+    .update({ status: "closed" })
+    .eq("room_id", room.room_id);
+
+  if (updateError) throw updateError;
+
+  return true;
 }
