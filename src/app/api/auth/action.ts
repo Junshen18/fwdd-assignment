@@ -5,7 +5,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
-import { useUserData } from "@/app/hooks/useUserData";
 
 export async function login(formData: FormData) {
   const supabase = createServerActionClient({ cookies });

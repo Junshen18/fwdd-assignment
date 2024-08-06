@@ -15,7 +15,6 @@ import { fetchRoomPlayers } from "@/utils/roomUtils";
 import { Session } from "@supabase/supabase-js";
 import checkSession from "@/utils/sessionUtils";
 import LoadingSpinner from "@/components/loadingSpinner";
-import { useUserData } from "@/app/hooks/useUserData";
 
 interface Player {
   userId: any;
@@ -190,9 +189,13 @@ export default function Battle({ params }: { params: { roomCode: string } }) {
   const handleEndGame = async () => {
     setShowEndGame(false);
     await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    // Sort players by MP in descending order
+    const sortedPlayers = [...players].sort((a, b) => b.mp - a.mp);
+
     router.push(
       `/leaderboard/${roomCode}?players=${encodeURIComponent(
-        JSON.stringify(players)
+        JSON.stringify(sortedPlayers)
       )}`
     );
   };
@@ -235,7 +238,7 @@ export default function Battle({ params }: { params: { roomCode: string } }) {
               </div>
             </div>
             <div className="w-1/3 flex justify-end">
-              <ProfileDiv pic="/pfp2.svg" name={username ?? ""} />
+              <ProfileDiv name={username ?? ""} />
             </div>
           </div>
 
