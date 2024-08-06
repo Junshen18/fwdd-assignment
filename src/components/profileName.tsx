@@ -9,13 +9,12 @@ import { Database } from "@/types/database.types";
 
 type ProfileDivType = {
   name: string;
-  pic: string;
 };
 
-export default function ProfileDiv({ name, pic }: ProfileDivType) {
+export default function ProfileDiv({ name }: ProfileDivType) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [changeAvatarPanel, setChangeAvatarPanel] = useState(false);
-  const [avatar, setAvatar] = useState(pic);
+  const [avatar, setAvatar] = useState<string | undefined>();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -25,6 +24,7 @@ export default function ProfileDiv({ name, pic }: ProfileDivType) {
     // fetch avatar from supabase
     const fetchAvatar = async () => {
       const userId = localStorage.getItem("user_id");
+      console.log("local storage userId:", userId);
       if (!userId) return;
 
       console.log("fetching avatar..");
@@ -42,6 +42,7 @@ export default function ProfileDiv({ name, pic }: ProfileDivType) {
       }
     };
     fetchAvatar();
+    // setAvatar(pic);
 
     // handle click outside of dropdown
     function handleClickOutside(event: MouseEvent) {
@@ -62,6 +63,7 @@ export default function ProfileDiv({ name, pic }: ProfileDivType) {
   // handle logout
   const handleLogout = () => {
     logout();
+    localStorage.clear();
   };
 
   // handle change avatar
@@ -102,7 +104,7 @@ export default function ProfileDiv({ name, pic }: ProfileDivType) {
     <div className="relative flex items-center justify-end md:mr-4 lg:mr-10">
       <div className="relative" ref={dropdownRef}>
         <Image
-          src={avatar}
+          src={avatar || "/pfp1.svg"}
           width={70}
           height={70}
           alt="Profile Icon"
